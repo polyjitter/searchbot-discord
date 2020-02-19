@@ -25,6 +25,8 @@ class Bot(commands.Bot):
             self.prefix = self.config.get('PREFIX')
             self.version = self.config.get('VERSION')
             self.maintenance = self.config.get('MAINTENANCE')
+        with open('searxes.txt') as instances:
+            self.instances = instances
         print('Initialization complete.\n\n')
     
     async def get_prefix_new(self, bot, msg):
@@ -59,41 +61,58 @@ bot = Bot(
 @bot.command()
 async def search(ctx, *, query: str):
     """Search online for results."""
+
+    print(f"\n\nNEW CALL: {ctx.user} from {ctx.server}.\n")
+
     async with ctx.typing():
         msg = search_logic(query)
         ctx.send(msg)
+
+@bot.command(aliases=['exit', 'reboot'])
+@commands.is_owner()
+async def restart(ctx):
+    exit()
 
 @bot.command()
 @commands.is_owner()
 async def rejson(ctx):
     '''Refreshes the list of instances for searx.'''
 
-    msg = await ctx.send('Refreshing instance list...\n\n(Due to extensive quality checks, this may take a bit.)')
+    msg = await ctx.send('<a:updating:403035325242540032> Refreshing instance list...\n\n'
+        '(Due to extensive quality checks, this may take a bit.)')
     plausible = []
 
+    # Get, parse, and quality check all instances
     async with bot.session.get('https://searx.space/data/instances.json') as r:
 
+        # Parsing
         searx_json = await r.json()
         instances = searx_json['instances']
 
+        # Quality Check
         for i in instances:
             info = instances.get(i)
             is_good = await instance_check(i, info)
             if is_good:
                 plausible.append(i)
 
+    # Save new list
     with open('searxes.txt', 'w') as f:
         f.write('\n'.join(plausible))
 
     await msg.edit(content='Instances refreshed!')
 
-async def search_logic(query: str):
+async def search_logic(query: str, type: str = None):
+    '''Provides search logic for all search commands.'''
 
-    # Choose an instance
-    with open('searxes.txt') as instances:
-        instance = random.sample(instances.read().split('\n'), k=1)
-        print(instance)
+    # Choose an instance & distribute load
+    if bot.instances == []:
+        bot.instances = open('searxes.txt') 
+    instance = random.sample(bot.instances.read().split('\n'), k=1)
+    bot.instances
+    print(f"Attempting to use {instance[0]}")
 
+    # Error Template
     error_msg = ("**An error occured!**\n\n"
         f"There was a problem with `{instance[0]}`. Please try again later.\n"
         f"_If problems with this instance persist, contact`{bot.appinfo.owner}` to have it removed._")
@@ -120,9 +139,10 @@ async def search_logic(query: str):
         msg += "\n".join(
             [f"**{entry['title']}** <{entry['url']}>" for entry in results[1:5]])
         msg += f"\n\n_Results retrieved from instance `{instance[0]}`._"
-    except (KeyError, IndexError):
-        print(response['results'])
-        return error_msg
+    except (KeyError, IndexError) as e:
+        # Reached if error with returned results
+        print(f"{e} with instance {instance[0]}, trying again.")
+        return search_logic(query) # Recurse until good response
 
     # Send message
     return msg
@@ -130,28 +150,29 @@ async def search_logic(query: str):
 async def instance_check(instance, info):
     '''Checks the quality of an instance.'''
 
+    # Makes sure proper values exist
     if 'error' in info:
         return False
-
     if not ('engines' in info and 'initial' in info['timing']):
         return False
-
     if not ('google' in info['engines'] and 'enabled' in info['engines']['google']):
         return False
 
+    # Makes sure google is enabled
     if not info['engines']['google']['enabled']:
         return False
 
+    # Makes sure is not Tor
     if info['network_type'] != 'normal':
         return False
 
+    # Only picks instances that are fast enough
     timing = int(info['timing']['initial'])
-    if timing > 0.25:
+    if timing > 0.45:
         return False
 
-    test_search = f'{instance}/search?q=test&format=json&language=en-US'
-
     # Check for Google captcha
+    test_search = f'{instance}/search?q=test&format=json&language=en-US'
     try:
         async with bot.session.get(test_search) as resp:
             response = await resp.json()
@@ -159,17 +180,23 @@ async def instance_check(instance, info):
     except (aiohttp.ClientError, KeyError, IndexError):
         return False
 
+    # Reached if passes all checks
     return True
 
 @bot.listen("on_command_error")
 async def on_command_error(ctx, error):
 
     if isinstance(error, commands.CommandNotFound):
-        print(ctx.args)
+
+        print(f"\n\nNEW CALL: {ctx.user} from {ctx.server}.\n")
+
         async with ctx.typing():
+            # Prepares term
             term = ctx.message.content.replace(ctx.prefix, '', 1)
             term = term.lstrip(' ')
+            # Does search
             msg = await search_logic(term)
+            # Sends result
             await ctx.send(msg)
 
     # elif isinstance(error, commands.CommandInvokeError):

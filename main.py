@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# search - a tiny little search utility bot for discord
-# Used and modified with permission
+# search - a tiny little search utility bot for discord.
 # All original work by taciturasa, with some code by ry00001.
+# Used and modified with permission.
+# See LICENSE for license information.
 
 '''Main File'''
 
@@ -93,8 +94,9 @@ async def search_logic(query: str):
         instance = random.sample(instances.read().split('\n'), k=1)
         print(instance)
 
-    error_msg = (f"There was a problem with `{instance[0]}`. Please contact "
-            f"**{bot.appinfo.owner}** to have it removed.")
+    error_msg = ("**An error occured!**\n\n"
+        f"There was a problem with `{instance[0]}`. Please try again later.\n"
+        f"_If problems with this instance persist, contact`{bot.appinfo.owner}` to have it removed._")
 
     # Create the URL to make an API call to
     call = f'{instance[0]}/search?q={query}&format=json&language=en-US'

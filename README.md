@@ -6,5 +6,7 @@
  ## Usage:
  
  `@search help` - Find all commands.
+ 
  `@search rejson` - Refresh the list of SearX instances.
+ 
  `@search your term here` - Search for stuff.

@@ -1,0 +1,8 @@
+{
+  "VERSION": "0.1",
+  "DESCRIPTION": "Just a bot, here to help us with server moderation and tide quelling.",
+  "MAINTENANCE": false,
+  "TOKEN": "",
+  "PREFIX": ["search!"],
+  "BLOCKED": []
+}

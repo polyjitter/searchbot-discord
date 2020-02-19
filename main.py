@@ -62,7 +62,7 @@ bot = Bot(
 async def search(ctx, *, query: str):
     """Search online for results."""
 
-    print(f"\n\nNEW CALL: {ctx.user} from {ctx.server}.\n")
+    print(f"\n\nNEW CALL: {ctx.author} from {ctx.guild}.\n")
 
     async with ctx.typing():
         msg = search_logic(query)

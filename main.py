@@ -25,8 +25,8 @@ class Bot(commands.Bot):
             self.prefix = self.config.get('PREFIX')
             self.version = self.config.get('VERSION')
             self.maintenance = self.config.get('MAINTENANCE')
-        with open('searxes.txt') as instances:
-            self.instances = instances
+        with open('searxes.txt') as f:
+            self.instances = f.read().split('\n')
         print('Initialization complete.\n\n')
     
     async def get_prefix_new(self, bot, msg):
@@ -66,7 +66,7 @@ async def search(ctx, *, query: str):
 
     async with ctx.typing():
         msg = search_logic(query)
-        ctx.send(msg)
+        await ctx.send(msg)
 
 @bot.command(aliases=['exit', 'reboot'])
 @commands.is_owner()
@@ -107,18 +107,19 @@ async def search_logic(query: str, type: str = None):
 
     # Choose an instance & distribute load
     if bot.instances == []:
-        bot.instances = open('searxes.txt') 
-    instance = random.sample(bot.instances.read().split('\n'), k=1)
-    bot.instances
-    print(f"Attempting to use {instance[0]}")
+        with open('searxes.txt') as f:
+            bot.instances = f.read().split('\n')
+    instance = random.sample(bot.instances, k=1)[0]
+    bot.instances.remove(instance)
+    print(f"Attempting to use {instance}")
 
     # Error Template
     error_msg = ("**An error occured!**\n\n"
-        f"There was a problem with `{instance[0]}`. Please try again later.\n"
+        f"There was a problem with `{instance}`. Please try again later.\n"
         f"_If problems with this instance persist, contact`{bot.appinfo.owner}` to have it removed._")
 
     # Create the URL to make an API call to
-    call = f'{instance[0]}/search?q={query}&format=json&language=en-US'
+    call = f'{instance}/search?q={query}&format=json&language=en-US'
 
     # Make said API call
     try:
@@ -138,11 +139,11 @@ async def search_logic(query: str, type: str = None):
                 f"{results[0]['content']}\n\n")
         msg += "\n".join(
             [f"**{entry['title']}** <{entry['url']}>" for entry in results[1:5]])
-        msg += f"\n\n_Results retrieved from instance `{instance[0]}`._"
+        msg += f"\n\n_Results retrieved from instance `{instance}`._"
     except (KeyError, IndexError) as e:
         # Reached if error with returned results
-        print(f"{e} with instance {instance[0]}, trying again.")
-        return search_logic(query) # Recurse until good response
+        print(f"{e} with instance {instance}, trying again.")
+        return await search_logic(query) # Recurse until good response
 
     # Send message
     return msg
@@ -168,11 +169,11 @@ async def instance_check(instance, info):
 
     # Only picks instances that are fast enough
     timing = int(info['timing']['initial'])
-    if timing > 0.45:
+    if timing > 0.20:
         return False
 
     # Check for Google captcha
-    test_search = f'{instance}/search?q=test&format=json&language=en-US'
+    test_search = f'{instance}/search?q=test&format=json&lang=en-US'
     try:
         async with bot.session.get(test_search) as resp:
             response = await resp.json()
@@ -188,7 +189,7 @@ async def on_command_error(ctx, error):
 
     if isinstance(error, commands.CommandNotFound):
 
-        print(f"\n\nNEW CALL: {ctx.user} from {ctx.server}.\n")
+        print(f"\n\nNEW CALL: {ctx.author} from {ctx.guild}.\n")
 
         async with ctx.typing():
             # Prepares term

@@ -65,7 +65,7 @@ async def search(ctx, *, query: str):
     print(f"\n\nNEW CALL: {ctx.author} from {ctx.guild}.\n")
 
     async with ctx.typing():
-        msg = search_logic(query)
+        msg = await search_logic(query)
         await ctx.send(msg)
 
 @bot.command(aliases=['exit', 'reboot'])

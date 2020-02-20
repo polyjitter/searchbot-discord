@@ -71,6 +71,7 @@ async def search(ctx, *, query: str):
 @bot.command(aliases=['exit', 'reboot'])
 @commands.is_owner()
 async def restart(ctx):
+    await ctx.send(':zzz: **Restarting.**')
     exit()
 
 @bot.command()
@@ -110,7 +111,6 @@ async def search_logic(query: str, type: str = None):
         with open('searxes.txt') as f:
             bot.instances = f.read().split('\n')
     instance = random.sample(bot.instances, k=1)[0]
-    bot.instances.remove(instance)
     print(f"Attempting to use {instance}")
 
     # Error Template
@@ -143,6 +143,7 @@ async def search_logic(query: str, type: str = None):
     except (KeyError, IndexError) as e:
         # Reached if error with returned results
         print(f"{e} with instance {instance}, trying again.")
+        bot.instances.remove(instance)
         return await search_logic(query) # Recurse until good response
 
     # Send message

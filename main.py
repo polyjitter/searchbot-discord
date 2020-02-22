@@ -57,7 +57,7 @@ class Bot(commands.Bot):
         elif message.content in mentions:
             assist_msg = (
                 "**Hi there! How can I help?**\n\n"
-                f"You may use **{self.user.mention}` term here`** to search, or **{self.user.mention}` help`** for assistance.")
+                f"You may use **{self.user.mention} `term here`** to search, or **{self.user.mention} `help`** for assistance.")
             await ctx.send(assist_msg)
         else:
             await self.process_commands(message)

@@ -45,14 +45,22 @@ class Bot(commands.Bot):
         print(msg)
 
     async def on_message(self, message):
+        mentions = [self.user.mention, f'<@!{bot.user.id}>']
+        ctx = await self.get_context(message)
+
         if message.author.bot:
             return
-        if message.author.id in self.config.get('BLOCKED'):
+        elif message.author.id in self.config.get('BLOCKED'):
             return
-        if (self.maintenance):
+        elif self.maintenance and not message.author.is_owner():
             return
-        await self.get_context(message)
-        await self.process_commands(message)
+        elif message.content in mentions:
+            assist_msg = (
+                "**Hi there! How can I help?**\n\n"
+                f"You may use **{self.user.mention}` term here`** to search, or **{self.user.mention}` help`** for assistance.")
+            await ctx.send(assist_msg)
+        else:
+            await self.process_commands(message)
 
 bot = Bot(
     description='search - a tiny little search utility bot for discord.',
@@ -121,6 +129,9 @@ async def search_logic(query: str, type: str = None):
     # Create the URL to make an API call to
     call = f'{instance}/search?q={query}&format=json&language=en-US'
 
+    if type:
+        call += f'?type={type}'
+
     # Make said API call
     try:
         async with bot.session.get(call) as resp:
@@ -185,7 +196,7 @@ async def instance_check(instance, info):
     # Reached if passes all checks
     return True
 
-@bot.listen("on_command_error")
+@bot.listen()
 async def on_command_error(ctx, error):
 
     if isinstance(error, commands.CommandNotFound):

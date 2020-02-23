@@ -13,7 +13,7 @@ import random
 class Search(commands.Cog):
     def  __init__(self, bot):
         self.bot = bot
-        self.session = bot.session
+        self.request = bot.request
         self.instances = bot.instances
 
     async def _search_logic(self, query: str, type: str = None):
@@ -26,10 +26,12 @@ class Search(commands.Cog):
         instance = random.sample(self.instances, k=1)[0]
         print(f"Attempting to use {instance}")
 
+        appinfo = await self.bot.application_info()
+
         # Error Template
         error_msg = ("**An error occured!**\n\n"
             f"There was a problem with `{instance}`. Please try again later.\n"
-            f"_If problems with this instance persist, contact`{self.bot.appinfo.owner}` to have it removed._")
+            f"_If problems with this instance persist, contact`{appinfo.owner}` to have it removed._")
 
         # Create the URL to make an API call to
         call = f'{instance}/search?q={query}&format=json&language=en-US'
@@ -40,7 +42,7 @@ class Search(commands.Cog):
 
         # Make said API call
         try:
-            async with self.session.get(call) as resp:
+            async with self.request.get(call) as resp:
                 response = await resp.json()
         except aiohttp.ClientError:
             return error_msg

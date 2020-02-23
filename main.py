@@ -24,10 +24,6 @@ class Bot(commands.Bot):
         super().__init__(self.get_prefix_new, **options)
         print('Performing initialization...\n')
 
-        # Create Session
-        # NOTE Coro created due to a deprecation in aiohttp.
-        asyncio.run(self.create_session())
-
         # Get Config Values
         with open('config.json') as f:
             self.config = json.load(f)
@@ -39,20 +35,25 @@ class Bot(commands.Bot):
         with open('searxes.txt') as f:
             self.instances = f.read().split('\n')
 
-        self.init_extensions()
-
         print('Initialization complete.\n\n')
 
     async def get_prefix_new(self, bot, msg):
-        return commands.when_mentioned_or(*self.prefix)(bot, msg)
-
-    async def create_session(self):
-        self.session = aiohttp.ClientSession()
+        if isinstance(msg.channel, discord.DMChannel) and self.config['PREFIXLESS_DMS']:
+            plus_none = self.prefix.copy()
+            plus_none.append('')
+            return commands.when_mentioned_or(*plus_none)(bot, msg)
+        else:
+            return commands.when_mentioned_or(*self.prefix)(bot, msg)
 
     def init_extensions(self):
         for ext in os.listdir('extensions'):
             if ext.endswith('.py'):
                 self.load_extension(f'extensions.{ext[:-3]}')
+
+    async def start(self, *args, **kwargs):
+        async with aiohttp.ClientSession() as self.request:
+            self.init_extensions()
+            await super().start(*args, **kwargs)
 
     async def on_ready(self):
         appinfo = await self.application_info()
@@ -66,7 +67,7 @@ class Bot(commands.Bot):
         print(msg)
 
     async def on_message(self, message):
-        mentions = [self.user.mention, f'<@!{bot.user.id}>']
+        mentions = [self.user.mention, f'<@!{self.user.id}>']
         ctx = await self.get_context(message)
 
         if message.author.bot:
@@ -97,6 +98,8 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         return
     elif isinstance(error, commands.CommandInvokeError):
+        # TODO Ensure old code functions
+
         error = error.original
         _traceback = traceback.format_tb(error.__traceback__)
         _traceback = ''.join(_traceback)

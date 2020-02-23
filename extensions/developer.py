@@ -13,7 +13,7 @@ import random
 class Developer(commands.Cog):
     def  __init__(self, bot):
         self.bot = bot
-        self.session = bot.session
+        self.request = bot.request
         self.instances = bot.instances
 
     async def _instance_check(self, instance, info):
@@ -43,7 +43,7 @@ class Developer(commands.Cog):
         # Check for Google captcha
         test_search = f'{instance}/search?q=test&format=json&lang=en-US'
         try:
-            async with self.session.get(test_search) as resp:
+            async with self.request.get(test_search) as resp:
                 response = await resp.json()
             response['results'][0]['content']
         except (aiohttp.ClientError, KeyError, IndexError):
@@ -61,7 +61,7 @@ class Developer(commands.Cog):
         plausible = []
 
         # Get, parse, and quality check all instances
-        async with self.session.get('https://searx.space/data/instances.json') as r:
+        async with self.request.get('https://searx.space/data/instances.json') as r:
             # Parsing
             searx_json = await r.json()
             instances = searx_json['instances']

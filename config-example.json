@@ -4,5 +4,6 @@
   "MAINTENANCE": false,
   "TOKEN": "",
   "PREFIX": ["search!"],
+  "PREFIXLESS_DMS": true,
   "BLOCKED": []
 }

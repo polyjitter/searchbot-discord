@@ -81,7 +81,7 @@ class Bot(commands.Bot):
                 "**Hi there! How can I help?**\n\n"
                 # Two New Lines Here
                 f"You may use **{self.user.mention} `term here`** to search,"
-                "or **{self.user.mention} `help`** for assistance.")
+                f"or **{self.user.mention} `help`** for assistance.")
             await ctx.send(assist_msg)
         else:
             await self.process_commands(message)

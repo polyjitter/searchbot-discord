@@ -16,8 +16,31 @@ class Search(commands.Cog):
         self.request = bot.request
         self.instances = bot.instances
 
-    async def _search_logic(self, query: str, type: str = None):
+    async def _search_logic(self, query: str, is_nsfw: bool = False, type: str = None):
         """Provides search logic for all search commands."""
+
+        # WARNING - This list includes slurs.
+        nono_words = [
+            'tranny', 'faggot', 'fag',
+            'porn', 'cock', 'dick',
+            'titty', 'boob', 'penis',
+            'slut', 'cum', 'jizz',
+            'semen', 'cooch', 'coochie',
+            'pussy', 'penis', 'fetish',
+            'bdsm'
+        ]
+        nono_sites = [
+            'xvideos', 'pornhub'
+        ]
+
+        if not is_nsfw:
+            for i in nono_words:
+                if i in query:
+                    return (
+                        "**Sorry!** That query included language "
+                        "we cannot accept in a non-NSFW channel. "
+                        "Please try again in an NSFW channel."
+                    )
 
         # Choose an instance
         if self.instances == []:
@@ -26,19 +49,22 @@ class Search(commands.Cog):
         instance = random.sample(self.instances, k=1)[0]
         print(f"Attempting to use {instance}")
 
-        appinfo = await self.bot.application_info()
-
         # Error Template
         error_msg = ("**An error occured!**\n\n"
             f"There was a problem with `{instance}`. Please try again later.\n"
-            f"_If problems with this instance persist, contact`{appinfo.owner}` to have it removed._")
+            f"_If problems with this instance persist, contact`{self.bot.appinfo.owner}` to have it removed._")
 
         # Create the URL to make an API call to
         call = f'{instance}/search?q={query}&format=json&language=en-US'
 
         # If a type is provided, add that type to the call URL
         if type:
-            call += f'?type={type}'
+            call += f'&type={type}'
+
+        if is_nsfw:
+            call += f'&safesearch=0'
+        else:
+            call += f'&safesearch=1'
 
         # Make said API call
         try:
@@ -59,6 +85,12 @@ class Search(commands.Cog):
             else:
                 amt = len(results)
 
+            if not is_nsfw:
+                for r in results[0:7]:
+                    for n in nono_sites:
+                        if n in r['url']:
+                            results.remove(r)
+
             # Header
             msg = f"Showing **{amt}** results for `{query}`. \n\n"
             # Expanded Result
@@ -77,7 +109,7 @@ class Search(commands.Cog):
             print(f"{e} with instance {instance}, trying again.")
 
             self.instances.remove(instance) # Weed the instance out
-            return await self._search_logic(query) # Recurse until good response
+            return await self._search_logic(query, is_nsfw) # Recurse until good response
 
         return msg
     
@@ -90,7 +122,7 @@ class Search(commands.Cog):
 
         # Handling
         async with ctx.typing():
-            msg = await self._search_logic(query)
+            msg = await self._search_logic(query, ctx.channel.is_nsfw())
             await ctx.send(msg)
 
     @commands.Cog.listener()
@@ -107,7 +139,7 @@ class Search(commands.Cog):
                 term = ctx.message.content.replace(ctx.prefix, '', 1)
                 term = term.lstrip(' ')
                 # Does search
-                msg = await self._search_logic(term)
+                msg = await self._search_logic(term, ctx.channel.is_nsfw())
                 # Sends result
                 await ctx.send(msg)
 

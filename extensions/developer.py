@@ -7,6 +7,8 @@
 
 import discord
 from discord.ext import commands
+import os
+# import psutil
 import aiohttp
 import random
 
@@ -84,6 +86,29 @@ class Developer(commands.Cog):
     async def restart(self, ctx):
         await ctx.send(':zzz: **Restarting.**')
         exit()
+
+#     @commands.command()
+#     async def stats(self, ctx):
+#         mem = psutil.virtual_memory()
+#         currproc = psutil.Process(os.getpid())
+#         total_ram = self.humanbytes(mem[0])
+#         available_ram = self.humanbytes(mem[1])
+#         usage = self.humanbytes(currproc.memory_info().rss)
+#         text = f"""
+# ```
+# Total RAM: {total_ram}
+# Available RAM: {available_ram}
+# RAM used by bot: {usage}
+# Number of bot commands: {len(ctx.bot.commands)}
+# Number of extensions present: {len(ctx.bot.cogs)}
+# Number of users: {len(ctx.bot.users)}
+# ```
+# """
+#         await ctx.send(text)
+
+    @commands.command(hidden=True)
+    async def error(self, ctx):
+        3 / 0
 
     async def cog_check(self, ctx):
         return commands.is_owner()

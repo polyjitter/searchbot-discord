@@ -56,12 +56,12 @@ class Bot(commands.Bot):
             await super().start(*args, **kwargs)
 
     async def on_ready(self):
-        appinfo = await self.application_info()
+        self.appinfo = await self.application_info()
 
         msg = "CONNECTED!\n"
         msg += "-----------------------------\n"
         msg += f"ACCOUNT: {bot.user}\n"
-        msg += f"OWNER: {appinfo.owner}\n"
+        msg += f"OWNER: {self.appinfo.owner}\n"
         msg += "-----------------------------\n"
 
         print(msg)
@@ -90,6 +90,21 @@ class Bot(commands.Bot):
 bot = Bot(
     description='search - a tiny little search utility bot for discord.',
     case_insensitive=True)
+
+
+@bot.command(aliases=['info', 'source', 'server'])
+async def about(ctx):
+    '''Returns information about this bot.'''
+    appinfo = await bot.application_info()
+
+    msg = f"**{bot.description}**\n"
+    msg += f"Created by **taciturasa#4365**, this instance by **{appinfo.owner}.**\n\n"
+    msg += "**Source Code:** _<https://github.com/taciturasa/searchbot-discord>_\n"
+    msg += "**Support Server:** _<https://discord.gg/4BpReNV>_\n"
+    msg += "_Note: Please attempt to contact the hoster of any separate instances before this server._\n\n"
+    msg += f"_See **{ctx.prefix}** `help` for help, and `stats` for statistics._"
+
+    await ctx.send(msg)
 
 
 @bot.listen()

@@ -9,6 +9,7 @@ import discord
 from discord.ext import commands
 import aiohttp
 import random
+import sys
 
 class Search(commands.Cog):
     def  __init__(self, bot):
@@ -16,7 +17,7 @@ class Search(commands.Cog):
         self.request = bot.request
         self.instances = bot.instances
 
-    async def _search_logic(self, query: str, is_nsfw: bool = False, type: str = None):
+    async def _search_logic(self, query: str, is_nsfw: bool = False, category: str = None):
         """Provides search logic for all search commands."""
 
         # WARNING - This list includes slurs.
@@ -58,8 +59,8 @@ class Search(commands.Cog):
         call = f'{instance}/search?q={query}&format=json&language=en-US'
 
         # If a type is provided, add that type to the call URL
-        if type:
-            call += f'&type={type}'
+        if category:
+            call += f'&category={category}'
 
         if is_nsfw:
             call += f'&safesearch=0'
@@ -142,6 +143,39 @@ class Search(commands.Cog):
                 msg = await self._search_logic(term, ctx.channel.is_nsfw())
                 # Sends result
                 await ctx.send(msg)
+
+def _create_cat_func(name: str, desc: str):
+    '''Creates functions for our categories.'''
+
+    async def cat_generic(self, ctx, *, query: str):
+        f'''{desc}'''
+        async with ctx.typing():
+            msg = await self._search_logic(
+                query, ctx.channel.is_nsfw(), name)
+            await ctx.send(msg)
+
+    return cat_generic
+
+_categories = {
+    'it': 'Search computer-related resources.',
+    'images': 'Search for images.',
+    'video': 'Search for videos.',
+    'music': 'Search for music.',
+    'files': 'Search for files.',
+    'maps': 'Search for map results.',
+    'news': 'Search for new articles.',
+    'science': 'Search for scientific knowledge.',
+    'social+media': 'Search for social media results.',
+}
+
+for c, d in _categories.items():
+    print(c)
+    print(d)
+    c_good = c.replace('+', '')
+    c_funcname = c.replace('+', '_')
+    made_func = _create_cat_func(c, d)
+    setattr(Search, c_funcname, made_func)
+    commands.command(name=c_good)(made_func)
 
 def setup(bot):
     bot.add_cog(Search(bot))

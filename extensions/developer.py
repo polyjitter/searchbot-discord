@@ -59,7 +59,8 @@ class Developer(commands.Cog):
         return haste_url
 
     @commands.group(name='shell',
-                    aliases=['ipython', 'repl', 'longexec'])
+                    aliases=['ipython', 'repl', 'longexec'],
+                    invoke_without_command=True)
     async def repl(self, ctx, *, name: str = None):
         """Head on impact with an interactive python shell."""
         # TODO Minimize local variables
@@ -433,7 +434,7 @@ class Developer(commands.Cog):
     async def system(self, ctx, *, command: str):
         """Runs system commands."""
 
-        message = await ctx.send('<a:typing:401162479041773568> Processing...')
+        message = await ctx.send('<a:loading:393852367751086090> Processing...')
         result = []
         try:
             process = subprocess.Popen(command.split(

@@ -68,7 +68,7 @@ class Botlist(commands.Cog):
     async def listupdate(self, ctx):
         """Updates statistics on botlists."""
 
-        msg = await ctx.send("**Updating...**")
+        msg = await ctx.send("<a:loading:393852367751086090> **Updating...**")
         responses = await self._update_logic()
         print(responses)
         await msg.edit(content="**Updated!**")

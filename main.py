@@ -126,7 +126,7 @@ async def on_command_error(ctx, error):
             title=f"{type(error).__name__}",
             color=0xFF0000,
             description=(
-                "This is (probably) a bug. This has been not been automatically "
+                "This is (probably) a bug. This has not been automatically "
                 f"reported, so please give **{appinfo.owner}** a heads-up in DMs.")
         )
 

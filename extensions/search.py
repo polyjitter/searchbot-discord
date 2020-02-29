@@ -130,7 +130,8 @@ class Search(commands.Cog):
     async def on_command_error(self, ctx, error):
         """Listener makes no command fallback to searching."""
 
-        if isinstance(error, commands.CommandNotFound):
+        if isinstance(error, commands.CommandNotFound) or \
+            isinstance(error, commands.CheckFailure):
             # Logging
             print(f"\n\nNEW CALL: {ctx.author} from {ctx.guild}.\n")
 
@@ -144,38 +145,6 @@ class Search(commands.Cog):
                 # Sends result
                 await ctx.send(msg)
 
-def _create_cat_func(name: str, desc: str):
-    '''Creates functions for our categories.'''
-
-    async def cat_generic(self, ctx, *, query: str):
-        f'''{desc}'''
-        async with ctx.typing():
-            msg = await self._search_logic(
-                query, ctx.channel.is_nsfw(), name)
-            await ctx.send(msg)
-
-    return cat_generic
-
-_categories = {
-    'it': 'Search computer-related resources.',
-    'images': 'Search for images.',
-    'video': 'Search for videos.',
-    'music': 'Search for music.',
-    'files': 'Search for files.',
-    'maps': 'Search for map results.',
-    'news': 'Search for new articles.',
-    'science': 'Search for scientific knowledge.',
-    'social+media': 'Search for social media results.',
-}
-
-for c, d in _categories.items():
-    print(c)
-    print(d)
-    c_good = c.replace('+', '')
-    c_funcname = c.replace('+', '_')
-    made_func = _create_cat_func(c, d)
-    setattr(Search, c_funcname, made_func)
-    commands.command(name=c_good)(made_func)
 
 def setup(bot):
     bot.add_cog(Search(bot))

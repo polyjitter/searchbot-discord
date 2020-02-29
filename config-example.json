@@ -1,9 +1,10 @@
 {
-  "VERSION": "0.1",
-  "DESCRIPTION": "Just a bot, here to help us with server moderation and tide quelling.",
+  "VERSION": "1.3 public",
+  "DESCRIPTION": "a minimalist search utility bot for discord, designed by taciturasa.",
   "MAINTENANCE": false,
   "TOKEN": "",
   "PREFIX": ["search!"],
   "PREFIXLESS_DMS": true,
+  "PERMS": 378944,
   "BLOCKED": []
 }

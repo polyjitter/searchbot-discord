@@ -21,7 +21,7 @@ class Bot(commands.Bot):
     '''Custom Bot Class that overrides the commands.ext one'''
 
     def __init__(self, **options):
-        super().__init__(self.get_prefix_new, **options)
+        super().__init__(self._get_prefix_new, **options)
         print('Performing initialization...\n')
 
         # Get Config Values
@@ -37,7 +37,9 @@ class Bot(commands.Bot):
 
         print('Initialization complete.\n\n')
 
-    async def get_prefix_new(self, bot, msg):
+    async def _get_prefix_new(self, bot, msg):
+        '''Full flexible check for prefix.'''
+
         if isinstance(msg.channel, discord.DMChannel) and self.config['PREFIXLESS_DMS']:
             plus_none = self.prefix.copy()
             plus_none.append('')
@@ -45,18 +47,11 @@ class Bot(commands.Bot):
         else:
             return commands.when_mentioned_or(*self.prefix)(bot, msg)
 
-    def init_extensions(self):
-        for ext in os.listdir('extensions'):
-            if ext.endswith('.py'):
-                self.load_extension(f'extensions.{ext[:-3]}')
-
-    async def start(self, *args, **kwargs):
-        async with aiohttp.ClientSession() as self.request:
-            self.init_extensions()
-            await super().start(*args, **kwargs)
-
     async def on_ready(self):
+        self.request = aiohttp.ClientSession()
         self.appinfo = await self.application_info()
+        # EXTENSION ENTRY POINT
+        self.load_extension('extensions.core')
 
         msg = "CONNECTED!\n"
         msg += "-----------------------------\n"
@@ -92,24 +87,8 @@ bot = Bot(
     case_insensitive=True)
 
 
-@bot.command(aliases=['info', 'source', 'server'])
-async def about(ctx):
-    '''Returns information about this bot.'''
-    appinfo = await bot.application_info()
-
-    msg = f"**{bot.description}**\n"
-    msg += f"Created by **taciturasa#4365**, this instance by **{appinfo.owner}.**\n\n"
-    msg += "**Source Code:** _<https://github.com/taciturasa/searchbot-discord>_\n"
-    msg += "**Support Server:** _<https://discord.gg/4BpReNV>_\n"
-    msg += "_Note: Please attempt to contact the hoster of any separate instances before this server._\n\n"
-    msg += f"_See **{ctx.prefix}** `help` for help, and `stats` for statistics._"
-
-    await ctx.send(msg)
-
-
 @bot.listen()
 async def on_command_error(ctx, error):
-
     if isinstance(error, commands.CommandNotFound):
         return
     elif isinstance(error, commands.CommandInvokeError):

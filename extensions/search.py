@@ -11,8 +11,9 @@ import aiohttp
 import random
 import sys
 
+
 class Search(commands.Cog):
-    def  __init__(self, bot):
+    def __init__(self, bot):
         self.bot = bot
         self.request = bot.request
         self.instances = bot.instances
@@ -52,8 +53,8 @@ class Search(commands.Cog):
 
         # Error Template
         error_msg = ("**An error occured!**\n\n"
-            f"There was a problem with `{instance}`. Please try again later.\n"
-            f"_If problems with this instance persist, contact`{self.bot.appinfo.owner}` to have it removed._")
+                     f"There was a problem with `{instance}`. Please try again later.\n"
+                     f"_If problems with this instance persist, contact`{self.bot.appinfo.owner}` to have it removed._")
 
         # Create the URL to make an API call to
         call = f'{instance}/search?q={query}&format=json&language=en-US'
@@ -103,17 +104,54 @@ class Search(commands.Cog):
                 [f"**{entry['title']}** <{entry['url']}>" for entry in results[1:5]])
             # Instance Info
             msg += f"\n\n_Results retrieved from instance `{instance}`._"
-        
+
         # Reached if error with returned results
         except (KeyError, IndexError) as e:
             # Logging
             print(f"{e} with instance {instance}, trying again.")
 
-            self.instances.remove(instance) # Weed the instance out
-            return await self._search_logic(query, is_nsfw) # Recurse until good response
+            self.instances.remove(instance)  # Weed the instance out
+            # Recurse until good response
+            return await self._search_logic(query, is_nsfw)
 
         return msg
-    
+
+    async def _instance_check(self, instance, info):
+        '''Checks the quality of an instance.'''
+
+        # Makes sure proper values exist
+        if 'error' in info:
+            return False
+        if not ('engines' in info and 'initial' in info['timing']):
+            return False
+        if not ('google' in info['engines'] and 'enabled' in info['engines']['google']):
+            return False
+
+        # Makes sure google is enabled
+        if not info['engines']['google']['enabled']:
+            return False
+
+        # Makes sure is not Tor
+        if info['network_type'] != 'normal':
+            return False
+
+        # Only picks instances that are fast enough
+        timing = int(info['timing']['initial'])
+        if timing > 0.20:
+            return False
+
+        # Check for Google captcha
+        test_search = f'{instance}/search?q=test&format=json&lang=en-US'
+        try:
+            async with self.request.get(test_search) as resp:
+                response = await resp.json()
+            response['results'][0]['content']
+        except (aiohttp.ClientError, KeyError, IndexError):
+            return False
+
+        # Reached if passes all checks
+        return True
+
     @commands.command()
     async def search(self, ctx, *, query: str):
         """Search online for results."""
@@ -126,12 +164,41 @@ class Search(commands.Cog):
             msg = await self._search_logic(query, ctx.channel.is_nsfw())
             await ctx.send(msg)
 
+    @commands.command()
+    @commands.is_owner()
+    async def rejson(self, ctx):
+        '''Refreshes the list of instances for searx.'''
+
+        msg = await ctx.send('<a:updating:403035325242540032> Refreshing instance list...\n\n'
+                             '(Due to extensive quality checks, this may take a bit.)')
+        plausible = []
+
+        # Get, parse, and quality check all instances
+        async with self.request.get('https://searx.space/data/instances.json') as r:
+            # Parsing
+            searx_json = await r.json()
+            instances = searx_json['instances']
+
+            # Quality Check
+            for i in instances:
+                info = instances.get(i)
+                is_good = await self._instance_check(i, info)
+                if is_good:
+                    plausible.append(i)
+
+        # Save new list
+        self.instances = plausible
+        with open('searxes.txt', 'w') as f:
+            f.write('\n'.join(plausible))
+
+        await msg.edit(content='Instances refreshed!')
+
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         """Listener makes no command fallback to searching."""
 
         if isinstance(error, commands.CommandNotFound) or \
-            isinstance(error, commands.CheckFailure):
+                isinstance(error, commands.CheckFailure):
             # Logging
             print(f"\n\nNEW CALL: {ctx.author} from {ctx.guild}.\n")
 

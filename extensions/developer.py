@@ -25,7 +25,6 @@ class Developer(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.request = bot.request
-        self.instances = bot.instances
         self.repl_sessions = {}
         self.repl_embeds = {}
         self._eval = {}

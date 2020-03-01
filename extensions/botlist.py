@@ -19,6 +19,7 @@ class Botlist(commands.Cog):
         self.dbl_token = bot.config['DBL']
         self.dbots_token = bot.config['DBOTS']
         self.bod_token = bot.config['BOD']
+        self.dblcom_token = bot.config['DBLCOM']
         self.dbl_client = dbl.DBLClient(
             self.bot, self.dbots_token)
 
@@ -27,6 +28,7 @@ class Botlist(commands.Cog):
 
         dbots_call = "https://discord.bots.gg/api/v1"
         bod_call = "https://bots.ondiscord.xyz/bot-api/"
+        dblcom_call = "https://discordbotlist.com/api"
         responses = {}
 
         # bots.discord.gg
@@ -52,6 +54,18 @@ class Botlist(commands.Cog):
                 resp_json = await resp.json()
                 print(resp_json)
                 responses['bod'] = resp_json
+
+        # discordbotlist.com
+        if self.dblcom_token != '':
+            dblcom_call += f"/bots/{self.bot.user.id}/stats"
+            dblcom_data = {'guilds': len(self.bot.guilds)}
+            dblcom_headers = {'Authorization': self.dblcom_token}
+            async with self.request.post(dblcom_call, 
+                                         json=dblcom_data,
+                                         headers=dblcom_headers) as resp:
+                resp_json = await resp.json()
+                print(resp_json)
+                responses['dblcom'] = resp_json
 
         # top.gg
         if self.dbl_token != '':

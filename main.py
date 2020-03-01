@@ -30,6 +30,7 @@ class Bot(commands.Bot):
             self.prefix = self.config.get('PREFIX')
             self.version = self.config.get('VERSION')
             self.maintenance = self.config.get('MAINTENANCE')
+            self.description = self.config.get('DESCRIPTION')
 
         # Get Instances
         with open('searxes.txt') as f:
@@ -50,6 +51,10 @@ class Bot(commands.Bot):
     async def on_ready(self):
         self.request = aiohttp.ClientSession()
         self.appinfo = await self.application_info()
+
+        if self.description == '':
+            self.description = self.appinfo.description
+
         # EXTENSION ENTRY POINT
         self.load_extension('extensions.core')
 
@@ -62,6 +67,7 @@ class Bot(commands.Bot):
         print(msg)
 
     async def on_message(self, message):
+        
         mentions = [self.user.mention, f'<@!{self.user.id}>']
         ctx = await self.get_context(message)
 
@@ -83,7 +89,6 @@ class Bot(commands.Bot):
 
 
 bot = Bot(
-    description='search - a tiny little search utility bot for discord.',
     case_insensitive=True)
 
 

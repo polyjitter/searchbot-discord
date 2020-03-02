@@ -80,7 +80,7 @@ class Core(commands.Cog):
         msg += "**Source Code:** _<https://github.com/taciturasa/searchbot-discord>_\n"
         msg += "**Support Server:** _<https://discord.gg/4BpReNV>_\n"
         msg += "_Note: Please attempt to contact the hoster of any separate instances before this server._\n\n"
-        msg += f"_See **{ctx.prefix}** `help` for help, `invite` to add the bot, and `stats` for statistics._"
+        msg += f"_See **{ctx.prefix}**`help` for help, `invite` to add the bot, and `stats` for statistics._"
 
         await ctx.send(msg)
 

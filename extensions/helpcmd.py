@@ -16,6 +16,7 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
         super().__init__(**options)
         self.command_attrs['help'] = "Find more assistance on this bot."
         self.subcommands_heading = "Subcommands"
+        self.no_category = "Miscellaneous"
 
     def get_opening_note(self):
         """Provides the header for all help commands."""
@@ -124,7 +125,7 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
             self.paginator.add_line(note, empty=True)
 
         # Gets the category for each command in the bot
-        no_category = '\u200b{0.no_category}'.format(self)
+        no_category = f"\u200b{self.no_category}"
         def get_category(command, *, no_category=no_category):
             cog = command.cog
             if cog is not None:

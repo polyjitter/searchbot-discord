@@ -240,7 +240,6 @@ class HelpCommand(commands.MinimalHelpCommand):
     def add_bot_commands_formatting(self, commands, heading):
         if commands:
             self.paginator.add_line(f"**{heading}**")
-            self.paginator.add_line()
             # TODO Make the Main Dynamic
             if heading == 'Core/Bot List':
                 self.paginator.add_line(", ".join(f"`{c.name}`" for c in commands))
@@ -316,7 +315,7 @@ class HelpCommand(commands.MinimalHelpCommand):
         filtered = await self.filter_commands(group.commands, sort=self.sort_commands)
         if filtered:
 
-            self.paginator.add_line('**%s**' % self.subcommands_heading, empty=True)
+            self.paginator.add_line('**%s**' % self.subcommands_heading)
             for command in filtered:
                 self.add_subcommand_formatting(command)
 

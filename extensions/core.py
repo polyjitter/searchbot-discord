@@ -193,7 +193,7 @@ class HelpCommand(commands.MinimalHelpCommand):
 
     def get_opening_note(self):
         bot = self.context.bot
-        return f"__**{bot.user.name}**__ - _{bot.description}_"
+        return f"__**{bot.user.name} v{bot.config['VERSION']}**__ - _{bot.description}_"
 
     def get_ending_note(self):
         command_name = self.invoked_with

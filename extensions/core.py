@@ -75,8 +75,8 @@ class Core(commands.Cog):
     async def about(self, ctx):
         """Returns information about this bot."""
 
-        msg = f"**{self.bot.description}**\n"
-        msg += f"Created by **taciturasa#4365**, this instance by **{self.bot.appinfo.owner}.**\n\n"
+        msg = f"__**{self.bot.user.name}**__ - _{self.bot.description}_\n"
+        msg += f"This instance by **{self.bot.appinfo.owner}.**\n\n"
         msg += "**Source Code:** _<https://github.com/taciturasa/searchbot-discord>_\n"
         msg += "**Support Server:** _<https://discord.gg/4BpReNV>_\n"
         msg += "_Note: Please attempt to contact the hoster of any separate instances before this server._\n\n"

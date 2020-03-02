@@ -23,33 +23,39 @@ class Bot(commands.Bot):
     def __init__(self, **options):
         """Initializes the main parts of the bot."""
 
-        super().__init__(self._get_prefix_new, **options)
+        # Logging
         print('Performing initialization...\n')
+
+        # Initializes parent class
+        super().__init__(self._get_prefix_new, **options)
 
         # Get Config Values
         with open('config.json') as f:
             self.config = json.load(f)
-            self.prefix = self.config.get('PREFIX')
-            self.version = self.config.get('VERSION')
-            self.maintenance = self.config.get('MAINTENANCE')
-            self.description = self.config.get('DESCRIPTION')
+            self.prefix = self.config['PREFIX']
+            self.version = self.config['VERSION']
+            self.maintenance = self.config['MAINTENANCE']
+            self.description = self.config['DESCRIPTION']
+            self.case_insensitive = self.config['CASE_INSENSITIVE']
+            
 
         # Get Instances
         with open('searxes.txt') as f:
             self.instances = f.read().split('\n')
 
+        # Logging
         print('Initialization complete.\n\n')
 
     async def _get_prefix_new(self, bot, msg):
-        """Full flexible check for prefix."""
+        """More flexible check for prefix."""
 
+        # Adds empty prefix if in DMs
         if isinstance(msg.channel, discord.DMChannel) and self.config['PREFIXLESS_DMS']:
-            # Adds empty prefix if in DMs
-            plus_none = self.prefix.copy()
-            plus_none.append('')
-            return commands.when_mentioned_or(*plus_none)(bot, msg)
+            plus_empty = self.prefix.copy()
+            plus_empty.append('')
+            return commands.when_mentioned_or(*plus_empty)(bot, msg)
+        # Keeps regular if not
         else:
-            # Keeps regular if not
             return commands.when_mentioned_or(*self.prefix)(bot, msg)
 
     async def on_ready(self):
@@ -61,7 +67,8 @@ class Bot(commands.Bot):
         if self.description == '':
             self.description = self.appinfo.description
 
-        # EXTENSION ENTRY POINT
+        # NOTE Extension Entry Point
+        # Loads core, which loads all other extensions
         self.load_extension('extensions.core')
 
         # Logging
@@ -73,48 +80,52 @@ class Bot(commands.Bot):
         print(msg)
 
     async def on_message(self, message):
+        """Handles what the bot does whenever a message comes across."""
 
         # Prerequisites
         mentions = [self.user.mention, f'<@!{self.user.id}>']
         ctx = await self.get_context(message)
 
         # Handling
+        # Turn away bots
         if message.author.bot:
-            # Turn away bots
             return
+
+        # Ignore blocked users
         elif message.author.id in self.config.get('BLOCKED'):
-            # Ignore blocked users
             return
+
+        # Maintenance mode
         elif self.maintenance and not message.author.is_owner():
-            # Maintenance mode
             return
+
+        # Empty ping for assistance
         elif message.content in mentions and self.config.get('MENTION_ASSIST'):
-            # Empty ping for assistance
             assist_msg = (
                 "**Hi there! How can I help?**\n\n"
                 # Two New Lines Here
                 f"You may use **{self.user.mention} `term here`** to search, "
                 f"or **{self.user.mention} `help`** for assistance.")
             await ctx.send(assist_msg)
+
+        # Move on to command handling
         else:
-            # Move on to command handling
             await self.process_commands(message)
 
-
-bot = Bot(
-    case_insensitive=True)
-
+# Creates Bot object
+bot = Bot()
 
 @bot.listen()
 async def on_command_error(ctx, error):
+    """Handles all errors stemming from ext.commands."""
+
+    # Lets other cogs handle CommandNotFound.
+    # Change this if you want command not found handling
     if isinstance(error, commands.CommandNotFound):
-        # Lets other cogs handle this.
-        # Change this if you want command not found handling.
         return
 
+    # Provides a very pretty embed if something's actually a dev's fault.
     elif isinstance(error, commands.CommandInvokeError):
-        # Provides a very pretty embed if something's actually a dev's fault.
-
         # Prerequisites
         error = error.original
         _traceback = traceback.format_tb(error.__traceback__)
@@ -149,10 +160,13 @@ async def on_command_error(ctx, error):
             if len(trace_content) > 1024
             else trace_content)
 
+        # Sending
         await ctx.send(embed_fallback, embed=error_embed)
 
+    # If anything else goes wrong, just go ahead and send it in chat.
     else:
-        # If anything else goes wrong, just go ahead and send it in chat.
         await ctx.send(error)
 
+# NOTE Bot Entry Point
+# Starts the bot
 bot.run(bot.config['TOKEN'])

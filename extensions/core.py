@@ -184,7 +184,7 @@ Number of extensions present: {len(ctx.bot.cogs)}
     async def restart(self, ctx):
         """Turns the bot off."""
 
-        await ctx.send(":zzz: **Restarting.**")
+        await ctx.send(":zzz: **Restarting...**")
         exit()
 
     @commands.command()

@@ -40,7 +40,7 @@ class BotList(commands.Cog, name='Bot List'):
         responses = {}
 
         # Calls
-        # bots.discord.gg
+        # discord.bots.gg
         if self.dbots_token != '':
 
             # Call Prereqs
@@ -114,7 +114,7 @@ class BotList(commands.Cog, name='Bot List'):
         # Links
         # XXX This is really stupidly done, I'm going to find a way to redo it.
         if self.dbots_token != '':
-            msg += f"_bots.discord.gg_ <https://bots.discord.gg/bots/{self.bot.user.id}/>\n"
+            msg += f"_discord.bots.gg_ <https://discord.bots.gg/bots/{self.bot.user.id}/>\n"
         if self.bod_token != '':
             msg += f"_bots.ondiscord.xyz_ <https://bots.ondiscord.xyz/bots/{self.bot.user.id}/>\n"
         if self.dblcom_token != '':

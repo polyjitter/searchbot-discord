@@ -49,6 +49,7 @@ class Bot(commands.Bot):
     def _init_extensions(self):
         """Initializes extensions."""
 
+        # Extensions
         for ext in os.listdir('extensions'):
             if ext.endswith('.py'):
                 try:
@@ -57,6 +58,27 @@ class Bot(commands.Bot):
                         f'extensions.{ext[:-3]}')
                 except Exception as e:
                     print(e)
+        
+        # Models
+        for ext in os.listdir('extensions/models'):
+            if ext.endswith('.py'):
+                try:
+                    bot.load_extension(f'extensions.models.{ext[:-3]}')
+                    self.extensions_list.append(
+                        f'extensions.models.{ext[:-3]}')
+                except Exception as e:
+                    print(e)
+
+        # Utils
+        for ext in os.listdir('extensions/utils'):
+            if ext.endswith('.py'):
+                try:
+                    bot.load_extension(f'extensions.utils.{ext[:-3]}')
+                    self.extensions_list.append(
+                        f'extensions.utils.{ext[:-3]}')
+                except Exception as e:
+                    print(e)
+
 
     async def _get_prefix_new(self, bot, msg):
         """More flexible check for prefix."""

@@ -14,7 +14,7 @@ import sys
 import cpuinfo
 import math
 import psutil
-from extensions.helpcmd import TaciHelpCommand
+from extensions.models.help import TaciHelpCommand
 
 
 class Core(commands.Cog):
@@ -120,8 +120,8 @@ Number of extensions present: {len(ctx.bot.cogs)}
 
         # Provides status of extension
         if name is not None:
-            status = "is" if f'extensions.{name}' in self.extensions_list else "is not"
-            msg = f"**extensions.{name}** {status} currently loaded and/or existent."
+            status = "is" if name in self.extensions_list else "is not"
+            msg = f"**{name}** {status} currently loaded and/or existent."
 
         # Handles empty calls
         else:
@@ -183,6 +183,18 @@ Number of extensions present: {len(ctx.bot.cogs)}
                     content=f'Failed to reload extension\n`{type(e).__name__}: {e}`')
         else:
             await m.edit(content='Extension isn\'t loaded.')
+
+    @extend.command(name='list')
+    async def list_cmd(self, ctx):
+        """Lists all extensions loaded by the bot."""
+
+        # Message Construction
+        msg = "**Loaded Extensions**\n\n"
+        msg += '\n'.join(f'`{e}`' for e in self.extensions_list)
+        msg += "\n\n_See the other subcommands of this command to manage them._"
+
+        # Message Sending
+        await ctx.send(msg)
 
     @commands.command(aliases=['exit', 'reboot'])
     @commands.is_owner()

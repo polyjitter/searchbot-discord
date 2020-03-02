@@ -242,3 +242,7 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
         # Sends the completed help output.
         self.paginator.close_page()  # TODO What does this do?
         await self.send_pages()
+
+def setup(bot):
+    """Lets helpcmd be added and reloaded as an extension."""
+    pass

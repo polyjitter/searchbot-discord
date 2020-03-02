@@ -184,8 +184,18 @@ Number of extensions present: {len(ctx.bot.cogs)}
     async def restart(self, ctx):
         """Turns the bot off."""
 
-        await ctx.send(':zzz: **Restarting.**')
+        await ctx.send(":zzz: **Restarting.**")
         exit()
+
+    @commands.command()
+    @commands.is_owner()
+    async def leave(self, ctx):
+        """Makes the bot leave the server this was called in."""
+
+        await ctx.send(
+            "\U0001F4A8 **Leaving server.**"
+            "_If you want me back, add me or get an admin to._")
+        await ctx.guild.leave()
 
     def cog_unload(self):
         self.bot.help_command = self._original_help_command

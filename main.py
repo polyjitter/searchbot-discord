@@ -75,7 +75,7 @@ class Bot(commands.Bot):
     async def on_message(self, message):
 
         # Prerequisites
-        mentions = commands.when_mentioned(bot, message)
+        mentions = [self.user.mention, f'<@!{self.user.id}>']
         ctx = await self.get_context(message)
 
         # Handling
@@ -88,7 +88,7 @@ class Bot(commands.Bot):
         elif self.maintenance and not message.author.is_owner():
             # Maintenance mode
             return
-        elif message.content in mentions and self.config['MENTION_ASSIST']:
+        elif message.content in mentions and self.config.get('MENTION_ASSIST'):
             # Empty ping for assistance
             assist_msg = (
                 "**Hi there! How can I help?**\n\n"

@@ -12,7 +12,7 @@ from discord.ext import commands, tasks
 import dbl
 
 
-class Botlist(commands.Cog):
+class BotList(commands.Cog, name='Bot List'):
     def __init__(self, bot):
         self.bot = bot
         self.request = bot.request
@@ -116,4 +116,4 @@ class Botlist(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Botlist(bot))
+    bot.add_cog(BotList(bot))

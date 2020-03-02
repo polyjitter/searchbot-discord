@@ -7,15 +7,22 @@ import sys
 import cpuinfo
 import math
 import psutil
+import itertools
 
 
 class Core(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.settings = {
+        self.settings = {   
             'extensions': []
         }
+
+        # 
+        self._original_help_command = bot.help_command
+        if bot.config['CUSTOM_HELP']:
+            bot.help_command = HelpCommand()
+        bot.help_command.cog = self
 
         self._init_extensions()
 
@@ -167,6 +174,64 @@ Number of extensions present: {len(ctx.bot.cogs)}
 
         await ctx.send(':zzz: **Restarting.**')
         exit()
+
+    def cog_unload(self):
+        self.bot.help_command = self._original_help_command
+
+class HelpCommand(commands.MinimalHelpCommand):
+    def __init__(self, **options):
+        super().__init__(**options)
+
+    def add_bot_commands_formatting(self, commands, heading):
+        if commands:
+            self.paginator.add_line(f"**{heading}**")
+            if heading == 'Main':
+                self.paginator.add_line(", ".join(f"`{c.name}`" for c in commands))
+            else:
+                for c in commands:
+                    self.paginator.add_line(f'`{c.name}` - _{c.short_doc}_')
+        self.paginator.add_line()
+
+    async def send_bot_help(self, mapping):
+        ctx = self.context
+        bot = ctx.bot
+
+        if bot.description:
+            self.paginator.add_line(bot.description, empty=True)
+
+        note = self.get_opening_note()
+        if note:
+            self.paginator.add_line(note, empty=True)
+
+        no_category = '\u200b{0.no_category}'.format(self)
+        def get_category(command, *, no_category=no_category):
+            cog = command.cog
+            return cog.qualified_name if cog is not None else no_category
+
+        filtered = await self.filter_commands(bot.commands, sort=True, key=get_category)
+        to_iterate = itertools.groupby(filtered, key=get_category)
+
+        main_cmds = []
+        other_cmds = {}
+
+        for category, commands in to_iterate:
+            commands = sorted(commands, key=lambda c: c.name) if self.sort_commands else list(commands)
+            if category in ['Core', 'Bot List']:
+                main_cmds.extend(commands) 
+            else:
+                other_cmds[category] = commands
+            
+        self.add_bot_commands_formatting(main_cmds, 'Main')
+        for category, commands in other_cmds.items():
+            self.add_bot_commands_formatting(commands, category)
+
+        note = self.get_ending_note()
+        if note:
+            self.paginator.add_line()
+            self.paginator.add_line(note)
+
+        await self.send_pages()
+
 
 
 def setup(bot):

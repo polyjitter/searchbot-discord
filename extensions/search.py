@@ -67,7 +67,7 @@ class Search(commands.Cog):
         )
 
         # Create the URL to make an API call to
-        call = f'{instance}/search?q={query}&format=json&language=en-US'
+        call = f'{instance}search?q={query}&format=json&language=en-US'
 
         # If a type is provided, add that type to the call URL
         if category:

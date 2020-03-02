@@ -19,6 +19,7 @@ import io
 import inspect
 import textwrap
 import subprocess
+from extensions.utils import online
 
 
 class Developer(commands.Cog):
@@ -29,6 +30,7 @@ class Developer(commands.Cog):
         # Main Stuff
         self.bot = bot
         self.request = bot.request
+        self.online = bot.online
         self.emoji = "\U0001F3D7"
 
         # Repl/Eval Stuff
@@ -53,19 +55,6 @@ class Developer(commands.Cog):
             err,
             '^',
             type(err).__name__)
-
-    async def _post_to_hastebin(self, string):
-        """Posts a string to hastebin."""
-        url = "https://hastebin.com/documents"
-        data = string.encode('utf-8')
-        async with self.request.post(url=url, data=data) as haste_response:
-            haste_key = (await haste_response.json())['key']
-            haste_url = f"http://hastebin.com/{haste_key}"
-        # data = {'sprunge': ''}
-        # data['sprunge'] = string
-        # haste_url = await self.aioclient.post(url='http://sprunge.us',
-        # data=data)
-        return haste_url
 
     @commands.group(name='shell',
                     aliases=['ipython', 'repl', 'longexec'],
@@ -161,7 +150,7 @@ class Developer(commands.Cog):
                         item,
                         history[item])
 
-                haste_url = await self._post_to_hastebin(history_string)
+                haste_url = await self.online.hastebin(history_string)
                 return_msg = "[`Leaving shell session. "\
                     "History hosted on hastebin.`]({})".format(
                         haste_url)
@@ -201,7 +190,7 @@ class Developer(commands.Cog):
                     if len(cleaned) > 800:
                         cleaned = "<Too big to be printed>"
                     if len(return_msg) > 800:
-                        haste_url = await self._post_to_hastebin(return_msg)
+                        haste_url = await self.online.hastebin(return_msg)
                         return_msg = "[`SyntaxError too big to be printed. "\
                             "Hosted on hastebin.`]({})".format(
                                 haste_url)
@@ -253,7 +242,7 @@ class Developer(commands.Cog):
             try:
                 if fmt is not None:
                     if len(fmt) >= 800:
-                        haste_url = await self._post_to_hastebin(fmt)
+                        haste_url = await self.online.hastebin(fmt)
                         self.repl_embeds[shell].add_field(
                             name="`>>> {}`".format(cleaned),
                             value="[`Content too big to be printed. "
@@ -467,7 +456,7 @@ class Developer(commands.Cog):
             if (len(result[0]) >= 1024):
                 stdout = result[0].decode('utf-8')
                 string = string + f'[[STDOUT]]\n{stdout}'
-                link = await self._post_to_hastebin(string)
+                link = await self.online.hastebin(string)
                 await message.edit(
                     content=f":x: Content too long. {link}",
                     embed=None)
@@ -476,7 +465,7 @@ class Developer(commands.Cog):
             if (len(result[1]) >= 1024):
                 stdout = result[0].decode('utf-8')
                 string = string + f'[[STDERR]]\n{stdout}'
-                link = await self._post_to_hastebin(string)
+                link = await self.online.hastebin(string)
                 await message.edit(
                     content=f":x: Content too long. {link}",
                     embed=None)

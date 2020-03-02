@@ -29,7 +29,8 @@ class Bot(commands.Bot):
         # Initializes parent class
         super().__init__(self._get_prefix_new, **options)
 
-        # Get Config Values
+        # Setup
+        self.extensions_list = []
         with open('config.json') as f:
             self.config = json.load(f)
             self.prefix = self.config['PREFIX']
@@ -44,6 +45,18 @@ class Bot(commands.Bot):
 
         # Logging
         print('Initialization complete.\n\n')
+
+    def _init_extensions(self):
+        """Initializes extensions."""
+
+        for ext in os.listdir('extensions'):
+            if ext.endswith('.py'):
+                try:
+                    bot.load_extension(f'extensions.{ext[:-3]}')
+                    self.extensions_list.append(
+                        f'extensions.{ext[:-3]}')
+                except Exception as e:
+                    print(e)
 
     async def _get_prefix_new(self, bot, msg):
         """More flexible check for prefix."""
@@ -68,7 +81,7 @@ class Bot(commands.Bot):
 
         # NOTE Extension Entry Point
         # Loads core, which loads all other extensions
-        self.load_extension('extensions.core')
+        self._init_extensions()
 
         # Logging
         msg = "CONNECTED!\n"

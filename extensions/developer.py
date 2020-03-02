@@ -38,6 +38,7 @@ class Developer(commands.Cog):
 
     def _cleanup_code(self, content):
         """Automatically removes code blocks from the code."""
+
         # remove ```py\n```
         if content.startswith('```') and content.endswith('```'):
             return '\n'.join(content.split('\n')[1:-1])
@@ -47,6 +48,7 @@ class Developer(commands.Cog):
 
     def _get_syntax_error(self, err):
         """Returns SyntaxError formatted for repl reply."""
+
         return '```py\n{0.text}{1:>{0.offset}}\n{2}: {0}```'.format(
             err,
             '^',

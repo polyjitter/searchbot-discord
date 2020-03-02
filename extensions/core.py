@@ -24,31 +24,14 @@ class Core(commands.Cog):
 
         # Main Stuff
         self.bot = bot
+        self.extensions_list = bot.extensions_list
         self.emoji = "\U0001F4E6"
-        self.settings = {
-            'extensions': []
-        }
 
         # Help Command
         self._original_help_command = bot.help_command
         if bot.config['CUSTOM_HELP']:
             bot.help_command = TaciHelpCommand()
         bot.help_command.cog = self
-
-        # Extensions
-        self._init_extensions()
-
-    def _init_extensions(self):
-        """Initializes extensions."""
-
-        for ext in os.listdir('extensions'):
-            if ext.endswith('.py') and not ext.startswith('core'):
-                try:
-                    self.bot.load_extension(f'extensions.{ext[:-3]}')
-                    self.settings['extensions'].append(
-                        f'extensions.{ext[:-3]}')
-                except:
-                    pass
 
     def _humanbytes(self, B) -> str:  # function lifted from StackOverflow
         """Return the given bytes as a human friendly KB, MB, GB, or TB string."""
@@ -129,16 +112,37 @@ Number of extensions present: {len(ctx.bot.cogs)}
         ping = (after - before) * 1000
         await pong.edit(content="`PING discordapp.com {}ms`".format(int(ping)))
 
-    @commands.command()
+    @commands.group(aliases=['extensions', 'ext'], 
+                    invoke_without_command=True)
+    @commands.is_owner()
+    async def extend(self, ctx, name:str = None):
+
+        # Provides status of extension
+        if name is not None:
+            status = "is" if f'extensions.{name}' in self.extensions_list else "is not"
+            msg = f"**extensions.{name}** {status} currently loaded and/or existent."
+
+        # Handles empty calls
+        else:
+            msg = (
+                "**Nothing was provided!**\n\n"
+                "Please provide an extension name for status, "
+                "or provide a subcommand."
+            )
+
+        # Sends completed message
+        await ctx.send(msg)
+
+    @extend.command(aliases=['le', 'l'])
     @commands.is_owner()
     async def load(self, ctx, name: str):
         """Load an extension into the bot."""
         m = await ctx.send(f'Loading {name}')
-        extension_name = 'extensions.{0}'.format(name)
-        if extension_name not in self.settings['extensions']:
+        extension_name = f'extensions.{name}'
+        if extension_name not in self.extensions_list:
             try:
                 self.bot.load_extension(extension_name)
-                self.settings['extensions'].append(extension_name)
+                self.extensions_list.append(extension_name)
                 await m.edit(content='Extension loaded.')
             except Exception as e:
                 await m.edit(
@@ -146,34 +150,34 @@ Number of extensions present: {len(ctx.bot.cogs)}
         else:
             await m.edit(content='Extension already loaded.')
 
-    @commands.command(aliases=["ule", "ul"])
+    @extend.command(aliases=["ule", "ul"])
     @commands.is_owner()
     async def unload(self, ctx, name: str):
         """Unload an extension from the bot."""
 
         m = await ctx.send(f'Unloading {name}')
-        extension_name = 'extensions.{0}'.format(name)
-        if extension_name in self.settings['extensions']:
+        extension_name = f'extensions.{name}'
+        if extension_name in self.extensions_list:
             self.bot.unload_extension(extension_name)
-            self.settings['extensions'].remove(extension_name)
+            self.extensions_list.remove(extension_name)
             await m.edit(content='Extension unloaded.')
         else:
             await m.edit(content='Extension not found or not loaded.')
 
-    @commands.command(aliases=["rle", "rl"])
+    @extend.command(aliases=["rle", "rl"])
     @commands.is_owner()
     async def reload(self, ctx, name: str):
         """Reload an extension of the bot."""
 
         m = await ctx.send(f'Reloading {name}')
-        extension_name = 'extensions.{0}'.format(name)
-        if extension_name in self.settings['extensions']:
+        extension_name = f'extensions.{name}'
+        if extension_name in self.extensions_list:
             self.bot.unload_extension(extension_name)
             try:
                 self.bot.load_extension(extension_name)
                 await m.edit(content='Extension reloaded.')
             except Exception as e:
-                self.settings['extensions'].remove(extension_name)
+                self.extensions_list.remove(extension_name)
                 await m.edit(
                     content=f'Failed to reload extension\n`{type(e).__name__}: {e}`')
         else:

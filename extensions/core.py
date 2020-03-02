@@ -116,6 +116,7 @@ Number of extensions present: {len(ctx.bot.cogs)}
                     invoke_without_command=True)
     @commands.is_owner()
     async def extend(self, ctx, name:str = None):
+        """Provides status of extensions and lets you hotswap extensions."""
 
         # Provides status of extension
         if name is not None:

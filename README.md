@@ -1,5 +1,5 @@
 # searchbot-discord
-**search** - a tiny little search utility bot for discord.
+**search** - a minimalist search utility bot for discord, designed by taciturasa.
 
  _To run, rename `config-example.json` to `config.json` and add your token. If you want to add more config options, you may do so there as well._
 

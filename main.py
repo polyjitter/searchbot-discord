@@ -96,14 +96,17 @@ class Bot(commands.Bot):
         """Initializes the main portion of the bot once it has connected."""
 
         # Prerequisites
-        self.request = aiohttp.ClientSession()
-        self.appinfo = await self.application_info()
+        if not hasattr(self, 'request'):
+            self.request = aiohttp.ClientSession()
+        if not hasattr(self, 'appinfo'):
+            self.appinfo = await self.application_info()
         if self.description == '':
             self.description = self.appinfo.description
 
         # NOTE Extension Entry Point
         # Loads core, which loads all other extensions
-        self._init_extensions()
+        if self.extensions_list == []:
+            self._init_extensions()
 
         # Logging
         msg = "CONNECTED!\n"

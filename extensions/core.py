@@ -14,8 +14,7 @@ import sys
 import cpuinfo
 import math
 import psutil
-import itertools
-
+from extensions.helpcmd import TaciHelpCommand
 
 class Core(commands.Cog):
     """Provides all core features of a bot."""
@@ -28,7 +27,7 @@ class Core(commands.Cog):
 
         self._original_help_command = bot.help_command
         if bot.config['CUSTOM_HELP']:
-            bot.help_command = HelpCommand()
+            bot.help_command = TaciHelpCommand()
         bot.help_command.cog = self
 
         self._init_extensions()
@@ -184,161 +183,6 @@ Number of extensions present: {len(ctx.bot.cogs)}
 
     def cog_unload(self):
         self.bot.help_command = self._original_help_command
-
-class HelpCommand(commands.MinimalHelpCommand):
-    def __init__(self, **options):
-        super().__init__(**options)
-        self.command_attrs['help'] = "Find more assistance on this bot."
-        self.subcommands_heading = "Subcommands"
-
-    def get_opening_note(self):
-        bot = self.context.bot
-        return f"__**{bot.user.name} v{bot.config['VERSION']}**__ - _{bot.description}_"
-
-    def get_ending_note(self):
-        command_name = self.invoked_with
-        return (
-            "_For more info, see "
-            f"`{self.clean_prefix}{command_name} [category/command/subcommand]`._"
-        )
-
-    def get_command_signature(self, command):
-        return f"**`{self.clean_prefix}{command.qualified_name} {command.signature}`**"
-
-    def add_aliases_formatting(self, aliases):
-        self.paginator.add_line(
-            f"_{self.aliases_heading} {','.join(f'`{a}`' for a in aliases)}_"
-        )
-
-    def add_command_formatting(self, command):
-
-        if command.description:
-            self.paginator.add_line(command.description, empty=True)
-
-        signature = self.get_command_signature(command)
-        if command.aliases:
-            self.paginator.add_line(signature)
-            self.add_aliases_formatting(command.aliases)
-        else:
-            self.paginator.add_line(signature, empty=True)
-
-        if command.help:
-            try:
-                self.paginator.add_line(command.help, empty=True)
-            except RuntimeError:
-                for line in command.help.splitlines():
-                    self.paginator.add_line(line)
-                self.paginator.add_line()
-
-    def add_subcommand_formatting(self, command):
-        if command.short_doc:
-            line = f"`{command.qualified_name}` - {command.short_doc}"
-        else:
-            line = f"`{command.qualified_name}`"
-        self.paginator.add_line(line)
-
-    def add_bot_commands_formatting(self, commands, heading):
-        if commands:
-            self.paginator.add_line(f"**{heading}**")
-            # TODO Make the Main Dynamic
-            if heading == 'Core':
-                self.paginator.add_line(", ".join(f"`{c.name}`" for c in commands))
-            else:
-                for c in commands:
-                    self.paginator.add_line(f'`{c.name}` - {c.short_doc}')
-        self.paginator.add_line()
-
-    async def send_bot_help(self, mapping):
-        ctx = self.context
-        bot = ctx.bot
-
-        note = self.get_opening_note()
-        if note:
-            self.paginator.add_line(note, empty=True)
-
-        no_category = '\u200b{0.no_category}'.format(self)
-        def get_category(command, *, no_category=no_category):
-            cog = command.cog
-            return cog.qualified_name if cog is not None else no_category
-
-        filtered = await self.filter_commands(bot.commands, sort=True, key=get_category)
-        to_iterate = itertools.groupby(filtered, key=get_category)
-
-        main_cmds = []
-        other_cmds = {}
-
-        for category, commands in to_iterate:
-            commands = sorted(commands, key=lambda c: c.name) if self.sort_commands else list(commands)
-            if category in ['Core', 'Bot List']:
-                main_cmds.extend(commands) 
-            else:
-                other_cmds[category] = commands
-            
-        self.add_bot_commands_formatting(main_cmds, 'Core')
-        for category, commands in other_cmds.items():
-            self.add_bot_commands_formatting(commands, category)
-
-        note = self.get_ending_note()
-        if note:
-            self.paginator.add_line(note)
-
-        await self.send_pages()
-
-    async def send_cog_help(self, cog):
-        note = self.get_opening_note()
-        if note:
-            self.paginator.add_line(note, empty=True)
-
-        self.paginator.add_line(f"**{cog.qualified_name}**")
-
-        if cog.description:
-            self.paginator.add_line(f"_{cog.description}_", empty=True)
-
-        filtered = await self.filter_commands(cog.get_commands(), sort=self.sort_commands)
-        if filtered:
-            for command in filtered:
-                self.add_subcommand_formatting(command)
-
-        note = self.get_ending_note()
-        if note:
-            self.paginator.add_line()
-            self.paginator.add_line(note)
-
-        await self.send_pages()
-
-    async def send_group_help(self, group):        
-        note = self.get_opening_note()
-        if note:
-            self.paginator.add_line(note, empty=True)
-        self.add_command_formatting(group)
-
-        filtered = await self.filter_commands(group.commands, sort=self.sort_commands)
-        if filtered:
-
-            self.paginator.add_line('**%s**' % self.subcommands_heading)
-            for command in filtered:
-                self.add_subcommand_formatting(command)
-
-        note = self.get_ending_note()
-        if note:
-            self.paginator.add_line()
-            self.paginator.add_line(note)
-
-        await self.send_pages()
-
-    async def send_command_help(self, command):
-        note = self.get_opening_note()
-        if note:
-            self.paginator.add_line(note, empty=True)
-
-        self.add_command_formatting(command)
-
-        note = self.get_ending_note()
-        if note:
-            self.paginator.add_line(note)
-
-        self.paginator.close_page()
-        await self.send_pages()
 
 
 def setup(bot):

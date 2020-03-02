@@ -22,6 +22,8 @@ import subprocess
 
 
 class Developer(commands.Cog):
+    """Provides various resources for developers."""
+
     def __init__(self, bot):
         self.bot = bot
         self.request = bot.request

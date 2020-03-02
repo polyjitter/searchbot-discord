@@ -13,6 +13,8 @@ import dbl
 
 
 class BotList(commands.Cog, name='Bot List'):
+    """Provides various utilities for handling BotList stuff."""
+
     def __init__(self, bot):
         self.bot = bot
         self.request = bot.request
@@ -78,6 +80,7 @@ class BotList(commands.Cog, name='Bot List'):
         # Finishing up
         return responses
 
+    # TODO Move to Core, hide behind check for any existing token
     @commands.command(aliases=['review'])
     async def vote(self, ctx):
         """Review and vote for us on various botlists!"""

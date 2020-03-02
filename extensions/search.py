@@ -13,6 +13,8 @@ import sys
 
 
 class Search(commands.Cog):
+    """Searches the web for a variety of different resources."""
+
     def __init__(self, bot):
         self.bot = bot
         self.request = bot.request

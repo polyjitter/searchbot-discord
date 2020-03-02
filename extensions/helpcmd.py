@@ -11,6 +11,8 @@ import itertools
 
 class TaciHelpCommand(commands.MinimalHelpCommand):
     def __init__(self, **options):
+
+        # Main Stuff
         super().__init__(**options)
         self.command_attrs['help'] = "Find more assistance on this bot."
         self.subcommands_heading = "Subcommands"
@@ -94,7 +96,7 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
             self.paginator.add_line(f"**{heading}**")
 
             # TODO Make the Core Dynamic
-            if heading == 'Core':
+            if heading == '\U0001F4E6  Core':
                 # `command1`, `command2`, `command3`
                 # On Same Line
                 self.paginator.add_line(", ".join(f"`{c.name}`" for c in commands))
@@ -125,7 +127,10 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
         no_category = '\u200b{0.no_category}'.format(self)
         def get_category(command, *, no_category=no_category):
             cog = command.cog
-            return cog.qualified_name if cog is not None else no_category
+            if cog is not None:
+                return f"{cog.emoji}  {cog.qualified_name}" if cog.emoji else cog.qualified_name
+            else:
+                return no_category
 
         # Gets all commands and categories to iterate over
         filtered = await self.filter_commands(bot.commands, sort=True, key=get_category)
@@ -134,13 +139,13 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
         # Splits Bot List and Core commands out of the others
         for category, commands in to_iterate:
             commands = sorted(commands, key=lambda c: c.name) if self.sort_commands else list(commands)
-            if category in ['Core', 'Bot List']:
+            if category in ['\U0001F4E6  Core', '\U0001F5F3  Bot List']:
                 main_cmds.extend(commands) 
             else:
                 other_cmds[category] = commands
         
         # Core/Bot List commands become compacted
-        self.add_bot_commands_formatting(main_cmds, 'Core')
+        self.add_bot_commands_formatting(main_cmds, '\U0001F4E6  Core')
 
         # Everything else is normal
         for category, commands in other_cmds.items():
@@ -164,7 +169,8 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
             # New Line
 
         # **Cog Name**
-        self.paginator.add_line(f"**{cog.qualified_name}**")
+        self.paginator.add_line(
+            f"{cog.emoji}  **{cog.qualified_name}**" if cog.emoji else f"{cog.qualified_name}")
 
         # _Description if there_
         if cog.description:

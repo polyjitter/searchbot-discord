@@ -25,8 +25,13 @@ class Developer(commands.Cog):
     """Provides various resources for developers."""
 
     def __init__(self, bot):
+
+        # Main Stuff
         self.bot = bot
         self.request = bot.request
+        self.emoji = "\U0001F3D7"
+
+        # Repl/Eval Stuff
         self.repl_sessions = {}
         self.repl_embeds = {}
         self._eval = {}

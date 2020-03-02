@@ -16,20 +16,26 @@ import math
 import psutil
 from extensions.helpcmd import TaciHelpCommand
 
+
 class Core(commands.Cog):
     """Provides all core features of a bot."""
 
     def __init__(self, bot):
+
+        # Main Stuff
         self.bot = bot
-        self.settings = {   
+        self.emoji = "\U0001F4E6"
+        self.settings = {
             'extensions': []
         }
 
+        # Help Command
         self._original_help_command = bot.help_command
         if bot.config['CUSTOM_HELP']:
             bot.help_command = TaciHelpCommand()
         bot.help_command.cog = self
 
+        # Extensions
         self._init_extensions()
 
     def _init_extensions(self):

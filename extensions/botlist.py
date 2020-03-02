@@ -16,9 +16,11 @@ class BotList(commands.Cog, name='Bot List'):
     """Provides various utilities for handling BotList stuff."""
 
     def __init__(self, bot):
+
         # Main Stuff
         self.bot = bot
         self.request = bot.request
+        self.emoji = "\U0001F5F3"
 
         # List Tokens
         self.dbl_token = bot.config['DBL']

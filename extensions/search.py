@@ -16,9 +16,12 @@ class Search(commands.Cog):
     """Searches the web for a variety of different resources."""
 
     def __init__(self, bot):
+
+        # Main Stuff
         self.bot = bot
         self.request = bot.request
         self.instances = bot.instances
+        self.emoji = "\U0001F50D"
 
     async def _search_logic(self, query: str, is_nsfw: bool = False, category: str = None):
         """Provides search logic for all search commands."""

@@ -517,7 +517,7 @@ class Developer(commands.Cog):
         3 / 0
 
     async def cog_check(self, ctx):
-        return (ctx.author.id == self.bot.owner_id)
+        return commands.is_owner()(ctx.command)
 
 
 def setup(bot):

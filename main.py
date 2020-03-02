@@ -37,7 +37,6 @@ class Bot(commands.Bot):
             self.maintenance = self.config['MAINTENANCE']
             self.description = self.config['DESCRIPTION']
             self.case_insensitive = self.config['CASE_INSENSITIVE']
-            
 
         # Get Instances
         with open('searxes.txt') as f:
@@ -112,8 +111,10 @@ class Bot(commands.Bot):
         else:
             await self.process_commands(message)
 
+
 # Creates Bot object
 bot = Bot()
+
 
 @bot.listen()
 async def on_command_error(ctx, error):

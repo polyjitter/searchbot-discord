@@ -78,7 +78,27 @@ class Botlist(commands.Cog):
         # Finishing up
         return responses
 
+    @commands.command(aliases=['review'])
+    async def vote(self, ctx):
+        """Review and vote for us on various botlists!"""
+
+        msg = (
+            "**Thank you for wanting to help us out!**\n"
+            "You can find us on the following lists:\n\n"
+        )
+        if self.dbots_token != '':
+            msg += f"_bots.discord.gg_ <https://bots.discord.gg/bots/{self.bot.user.id}/>\n"
+        if self.bod_token != '':
+            msg += f"_bots.ondiscord.xyz_ <https://bots.ondiscord.xyz/bots/{self.bot.user.id}/>\n"
+        if self.dblcom_token != '':
+            msg += f"_discordbotlist.com_ <https://discordbotlist.com/bots/{self.bot.user.id}/>\n"
+        if self.dbl_token != '':
+            msg += f"_top.gg_ <https://top.gg/bot/{self.bot.user.id}/>\n"
+
+        await ctx.send(msg)
+
     @commands.command()
+    @commands.is_owner()
     async def listupdate(self, ctx):
         """Updates statistics on botlists."""
 
@@ -89,11 +109,10 @@ class Botlist(commands.Cog):
 
     @tasks.loop(minutes=15.0)
     async def update_stats(self):
+        """Automatically updates statistics every 15 minutes."""
+        
         responses = await self._update_logic()
         print(responses)
-
-    async def cog_check(self, ctx):
-        return (ctx.author.id == self.bot.appinfo.owner.id)
 
 
 def setup(bot):

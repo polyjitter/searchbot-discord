@@ -72,8 +72,11 @@ class Core(commands.Cog):
         msg = (
             "**Thanks for checking me out!**\n\n"
             "Use the following link to add me:\n"
-            f"*<https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&permissions={self.bot.config['PERMS']}&scope=bot>*"
+            f"*<https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot>*"
         )
+
+        if self.bot.config['PERMS'] is not None:
+            msg += f"&permissions={self.bot.config['PERMS']}"
 
         await ctx.send(msg)
 

@@ -21,6 +21,7 @@ class Search(commands.Cog):
     async def _search_logic(self, query: str, is_nsfw: bool = False, category: str = None):
         """Provides search logic for all search commands."""
 
+        # NSFW Filtering
         # WARNING - This list includes slurs.
         nono_words = [
             'tranny', 'faggot', 'fag',
@@ -32,7 +33,9 @@ class Search(commands.Cog):
             'bdsm'
         ]
         nono_sites = [
-            'xvideos', 'pornhub'
+            'xvideos', 'pornhub',
+            'xhamster', 'xnxx',
+            'youporn'
         ]
 
         if not is_nsfw:
@@ -52,21 +55,29 @@ class Search(commands.Cog):
         print(f"Attempting to use {instance}")
 
         # Error Template
-        error_msg = ("**An error occured!**\n\n"
-                     f"There was a problem with `{instance}`. Please try again later.\n"
-                     f"_If problems with this instance persist, contact`{self.bot.appinfo.owner}` to have it removed._")
+        error_msg = (
+            "**An error occured!**\n\n"
+            f"There was a problem with `{instance}`. Please try again later.\n"
+            f"_If problems with this instance persist, contact`{self.bot.appinfo.owner}` to have it removed._"
+        )
 
         # Create the URL to make an API call to
         call = f'{instance}/search?q={query}&format=json&language=en-US'
 
         # If a type is provided, add that type to the call URL
         if category:
-            call += f'&category={category}'
+            call += f'&categories={category}'
 
         if is_nsfw:
-            call += f'&safesearch=0'
+            call += '&safesearch=0'
         else:
-            call += f'&safesearch=1'
+            call += '&safesearch=1'
+
+        # Figure out engines for different categories to get decent results.
+        if category == 'videos':
+            call += '&engines=bing+videos,google+videos'
+
+        print(call)
 
         # Make said API call
         try:
@@ -117,7 +128,7 @@ class Search(commands.Cog):
         return msg
 
     async def _instance_check(self, instance, info):
-        '''Checks the quality of an instance.'''
+        """Checks the quality of an instance."""
 
         # Makes sure proper values exist
         if 'error' in info:
@@ -154,7 +165,7 @@ class Search(commands.Cog):
 
     @commands.command()
     async def search(self, ctx, *, query: str):
-        """Search online for results."""
+        """Search online for general results."""
 
         # Logging
         print(f"\n\nNEW CALL: {ctx.author} from {ctx.guild}.\n")
@@ -164,10 +175,82 @@ class Search(commands.Cog):
             msg = await self._search_logic(query, ctx.channel.is_nsfw())
             await ctx.send(msg)
 
+    @commands.command(aliases=['video'])
+    async def videos(self, ctx, *, query: str):
+        """Search online for videos."""
+
+        # Logging
+        print(f"\n\nNEW VIDEO CALL: {ctx.author} from {ctx.guild}.\n")
+
+        # Handling
+        async with ctx.typing():
+            msg = await self._search_logic(query, ctx.channel.is_nsfw(), 'videos')
+            await ctx.send(msg)
+
+    @commands.command()
+    async def music(self, ctx, *, query: str):
+        """Search online for music."""
+
+        # Logging
+        print(f"\n\nNEW MUSIC CALL: {ctx.author} from {ctx.guild}.\n")
+
+        # Handling
+        async with ctx.typing():
+            msg = await self._search_logic(query, ctx.channel.is_nsfw(), 'music')
+            await ctx.send(msg)
+
+    @commands.command(aliases=['file'])
+    async def files(self, ctx, *, query: str):
+        """Search online for files."""
+
+        # Logging
+        print(f"\n\nNEW FILES CALL: {ctx.author} from {ctx.guild}.\n")
+
+        # Handling
+        async with ctx.typing():
+            msg = await self._search_logic(query, ctx.channel.is_nsfw(), 'files')
+            await ctx.send(msg)
+
+    @commands.command(aliases=['image'])
+    async def images(self, ctx, *, query: str):
+        """Search online for images."""
+
+        # Logging
+        print(f"\n\nNEW IMAGES CALL: {ctx.author} from {ctx.guild}.\n")
+
+        # Handling
+        async with ctx.typing():
+            msg = await self._search_logic(query, ctx.channel.is_nsfw(), 'images')
+            await ctx.send(msg)
+
+    @commands.command()
+    async def it(self, ctx, *, query: str):
+        """Search online for IT-related information."""
+
+        # Logging
+        print(f"\n\nNEW IT CALL: {ctx.author} from {ctx.guild}.\n")
+
+        # Handling
+        async with ctx.typing():
+            msg = await self._search_logic(query, ctx.channel.is_nsfw(), 'it')
+            await ctx.send(msg)
+
+    @commands.command(aliases=['map'])
+    async def maps(self, ctx, *, query: str):
+        """Search online for map information."""
+
+        # Logging
+        print(f"\n\nNEW MAP CALL: {ctx.author} from {ctx.guild}.\n")
+
+        # Handling
+        async with ctx.typing():
+            msg = await self._search_logic(query, ctx.channel.is_nsfw(), 'map')
+            await ctx.send(msg)
+
     @commands.command()
     @commands.is_owner()
     async def rejson(self, ctx):
-        '''Refreshes the list of instances for searx.'''
+        """Refreshes the list of instances for searx."""
 
         msg = await ctx.send('<a:updating:403035325242540032> Refreshing instance list...\n\n'
                              '(Due to extensive quality checks, this may take a bit.)')

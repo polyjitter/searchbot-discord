@@ -18,16 +18,19 @@ class BotList(commands.Cog, name='Bot List'):
     def __init__(self, bot):
         self.bot = bot
         self.request = bot.request
+        # Tokens
         self.dbl_token = bot.config['DBL']
         self.dbots_token = bot.config['DBOTS']
         self.bod_token = bot.config['BOD']
         self.dblcom_token = bot.config['DBLCOM']
+        # top.gg clent
         self.dbl_client = dbl.DBLClient(
             self.bot, self.dbots_token)
 
     async def _update_logic(self):
         """Handles all statistic updating for various different bot lists."""
 
+        # Prerequisites
         dbots_call = "https://discord.bots.gg/api/v1"
         bod_call = "https://bots.ondiscord.xyz/bot-api/"
         dblcom_call = "https://discordbotlist.com/api"
@@ -83,12 +86,13 @@ class BotList(commands.Cog, name='Bot List'):
     # TODO Move to Core, hide behind check for any existing token
     @commands.command(aliases=['review'])
     async def vote(self, ctx):
-        """Review and vote for us on various botlists!"""
+        """Review and vote for this bot on various botlists."""
 
         msg = (
             "**Thank you for wanting to help us out!**\n"
             "You can find us on the following lists:\n\n"
         )
+        
         if self.dbots_token != '':
             msg += f"_bots.discord.gg_ <https://bots.discord.gg/bots/{self.bot.user.id}/>\n"
         if self.bod_token != '':
@@ -107,7 +111,7 @@ class BotList(commands.Cog, name='Bot List'):
 
         msg = await ctx.send("<a:loading:393852367751086090> **Updating...**")
         responses = await self._update_logic()
-        print(responses)
+        print(responses) # TODO Look at responses and figure out error handling
         await msg.edit(content="**Updated!**")
 
     @tasks.loop(minutes=15.0)

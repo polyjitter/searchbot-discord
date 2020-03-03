@@ -114,7 +114,7 @@ class Bot(commands.Bot):
                     name=f"@{self.user.name}",
                     type=discord.ActivityType.listening
                 ),
-                status=discord.Status.dnd
+                status=discord.Status.online
             )
 
         # NOTE Extension Entry Point

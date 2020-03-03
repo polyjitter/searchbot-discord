@@ -86,6 +86,7 @@ class BotList(commands.Cog, name='Bot List'):
             async with self.request.post(dblcom_call,
                                          json=dblcom_data,
                                          headers=dblcom_headers) as resp:
+                self.bot.warn(content=str(resp))
                 resp_json = await resp.json()
                 print(resp_json)
                 responses['dblcom'] = resp_json

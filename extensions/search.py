@@ -124,7 +124,7 @@ class Search(commands.Cog):
         # Reached if error with returned results
         except (KeyError, IndexError) as e:
             # Logging
-            self.warn(
+            await self.warn(
                 f"A user encountered a(n) `{e}` with <{instance}> when searching for `{query}`. "
                 "Consider removing it or looking into it.",
                 name="Failed Instance"

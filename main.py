@@ -46,6 +46,7 @@ class Bot(commands.Bot):
         # Utils
         for ext in os.listdir('extensions/utils'):
             if ext.endswith('.py'):
+                print(ext)
                 try:
                     bot.load_extension(f'extensions.utils.{ext[:-3]}')
                     self.extensions_list.append(
@@ -131,6 +132,7 @@ class Bot(commands.Bot):
         msg += f"OWNER: {self.appinfo.owner}\n"
         msg += "-----------------------------\n"
         print(msg)
+
         await self.logging.info(content=msg, name="On Ready")
 
     async def on_message(self, message):
@@ -150,7 +152,7 @@ class Bot(commands.Bot):
             return
 
         # Maintenance mode
-        elif self.maintenance and not message.author.is_owner():
+        elif self.maintenance and not message.author.id == bot.appinfo.owner.id:
             return
 
         # Empty ping for assistance

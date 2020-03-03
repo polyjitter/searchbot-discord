@@ -99,6 +99,24 @@ class Bot(commands.Bot):
         if self.description == '':
             self.description = self.appinfo.description
 
+        # Maintenance Mode
+        if self.maintenance:
+            await self.change_presence(
+                activity=discord.Activity(
+                    name="Maintenance",
+                    type=discord.ActivityType.watching
+                ),
+                status=discord.Status.dnd
+            )
+        else:
+            await self.change_presence(
+                activity=discord.Activity(
+                    name=f"@{self.user.name}",
+                    type=discord.ActivityType.listening
+                ),
+                status=discord.Status.dnd
+            )
+
         # NOTE Extension Entry Point
         # Loads core, which loads all other extensions
         if self.extensions_list == []:
@@ -113,6 +131,7 @@ class Bot(commands.Bot):
         msg += f"OWNER: {self.appinfo.owner}\n"
         msg += "-----------------------------\n"
         print(msg)
+        await self.logging.info(content=msg, name="On Ready")
 
     async def on_message(self, message):
         """Handles what the bot does whenever a message comes across."""

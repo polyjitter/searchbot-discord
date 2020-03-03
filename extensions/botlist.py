@@ -55,7 +55,6 @@ class BotList(commands.Cog, name='Bot List'):
                                          json=dbots_data,
                                          headers=dbots_headers) as resp:
                 resp_json = await resp.json()
-                print(resp_json)
                 responses['dbots'] = resp_json
 
         # bots.ondiscord.xyz
@@ -71,7 +70,6 @@ class BotList(commands.Cog, name='Bot List'):
                                          json=bod_data,
                                          headers=bod_headers) as resp:
                 resp_json = await resp.json()
-                print(resp_json)
                 responses['bod'] = resp_json
 
         # discordbotlist.com
@@ -86,10 +84,7 @@ class BotList(commands.Cog, name='Bot List'):
             async with self.request.post(dblcom_call,
                                          json=dblcom_data,
                                          headers=dblcom_headers) as resp:
-                await self.bot.logging.warn(content=str(resp))
-                resp_json = await resp.json()
-                print(resp_json)
-                responses['dblcom'] = resp_json
+                responses['dblcom'] = resp.status
 
         # top.gg
         if self.dbl_token != '':

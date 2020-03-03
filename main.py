@@ -142,9 +142,13 @@ class Bot(commands.Bot):
         mentions = [self.user.mention, f'<@!{self.user.id}>']
         ctx = await self.get_context(message)
 
+        # Avoid warnings while loading
+        if not hasattr(bot, 'appinfo'):
+            return
+
         # Handling
         # Turn away bots
-        if message.author.bot:
+        elif message.author.bot:
             return
 
         # Ignore blocked users

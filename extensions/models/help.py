@@ -32,12 +32,17 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
 
         # Prerequisites
         command_name = self.invoked_with
+        bot = self.context.bot
 
-        return (
+        end_note = (
             "_For more info, see "
             # `prefix!command [category/command/subcommand]`
             f"`{self.clean_prefix}{command_name} [category/command/subcommand]`._"
         )
+        if bot.config['PREFIXLESS_DMS']:
+            end_note += f"\n_You can also use all commands without a prefix in DMs, and search with `{self.clean_prefix}term`._"
+
+        return end_note
 
     def get_command_signature(self, command):
         """Gets the syntax string for a command."""

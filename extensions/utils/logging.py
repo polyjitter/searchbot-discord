@@ -17,25 +17,26 @@ class Logging():
     def __init__(self, bot):
         self.bot = bot
         self.request = bot.request
+        self.online = bot.online
         self.maintenance = bot.maintenance
 
         # Sets info hook first
-        self.info_hook = self.bot.online.get_webhook(
+        self.info_hook = self.online.get_webhook(
             bot.config['INFO_HOOK'] if bot.config['INFO_HOOK']
             else None
         )
 
         # Sets other hooks or defaults them
         if self.info_hook:
-            self.warn_hook = self.bot.online.get_webhook(
+            self.warn_hook = self.online.get_webhook(
                 bot.config['WARN_HOOK'] if bot.config['WARN_HOOK']
                 else self.info_hook
             )
-            self.error_hook = self.bot.online.get_webhook(
+            self.error_hook = self.online.get_webhook(
                 bot.config['ERROR_HOOK'] if bot.config['ERROR_HOOK']
                 else self.info_hook
             )
-            self.debug_hook = self.bot.online.get_webhook(
+            self.debug_hook = self.online.get_webhook(
                 bot.config['DEBUG_HOOK'] if bot.config['DEBUG_HOOK']
                 else self.info_hook
             )
@@ -56,7 +57,7 @@ class Logging():
 
         # Hastebins Traceback
         try:
-            url = await self.bot.online.hastebin(
+            url = await self.online.hastebin(
                 ''.join(original_exc))
         except Exception as e:
             url = None

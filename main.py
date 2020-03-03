@@ -44,9 +44,16 @@ class Bot(commands.Bot):
         """Initializes extensions."""
 
         # Utils
-        for ext in os.listdir('extensions/utils'):
+
+        # Avoids race conditions with online
+        utils_dir = os.listdir('extensions/utils')
+        if 'online.py' in utils_dir:
+            utils_dir.remove('online.py')
+            bot.load_extension('extensions.utils.online')
+
+        # Rest of utils
+        for ext in utils_dir:
             if ext.endswith('.py'):
-                print(ext)
                 try:
                     bot.load_extension(f'extensions.utils.{ext[:-3]}')
                     self.extensions_list.append(

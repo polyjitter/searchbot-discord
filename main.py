@@ -198,14 +198,14 @@ async def on_command_error(ctx, error):
 
         # Prerequisites
         embed_fallback = f"**An error occured: {type(error).__name__}. Please contact {bot.appinfo.owner}.**"        
-        error_embed = await bot.logging.error(error, ctx, ctx.command.cog.__name__)
+        error_embed = await bot.logging.error(error, ctx, ctx.command.cog.qualified_name)
 
         # Sending
         await ctx.send(embed_fallback, embed=error_embed)
 
     # If anything else goes wrong, just go ahead and send it in chat.
     else:
-        await bot.logging.error(error, ctx, ctx.command.cog.__name__)
+        await bot.logging.error(error, ctx, ctx.command.cog.qualified_name)
         await ctx.send(error)
 # NOTE Bot Entry Point
 # Starts the bot

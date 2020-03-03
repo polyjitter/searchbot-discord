@@ -53,7 +53,6 @@ class Logging():
         formatted_tb = ''.join(formatted_tb)
         original_exc = traceback.format_exception(
             type(error), error, error.__traceback__)
-        print(original_exc)
 
         # Hastebins Traceback
         try:

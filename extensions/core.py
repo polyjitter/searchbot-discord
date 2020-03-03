@@ -74,11 +74,13 @@ class Core(commands.Cog):
         msg = (
             "**Thanks for checking me out!**\n\n"
             "Use the following link to add me:\n"
-            f"*<https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot>*"
+            f"*<https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot"
         )
 
         if self.bot.config['PERMS'] is not None:
-            msg += f"&permissions={self.bot.config['PERMS']}"
+            msg += f"&permissions={self.bot.config['PERMS']}>*"
+        else:
+            msg += ">*"
 
         await ctx.send(msg)
 
@@ -208,11 +210,15 @@ Number of extensions present: {len(ctx.bot.cogs)}
     @commands.is_owner()
     async def leave(self, ctx):
         """Makes the bot leave the server this was called in."""
-
-        await ctx.send(
-            "\U0001F4A8 **Leaving server.**"
-            "_If you want me back, add me or get an admin to._")
-        await ctx.guild.leave()
+        
+        if ctx.guild:
+            await ctx.send(
+                "\U0001F4A8 **Leaving server.** "
+                "_If you want me back, add me or get an admin to._")
+            await ctx.guild.leave()
+        else:
+            await ctx.send(
+                "**Can't leave!** _This channel is not inside a guild_")
 
     def cog_unload(self):
         self.bot.help_command = self._original_help_command

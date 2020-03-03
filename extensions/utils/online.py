@@ -18,11 +18,11 @@ class Online():
     async def hastebin(self, string):
         """Posts a string to hastebin."""
 
-        url = "https://hastebin.com/documents"
+        url = "https://hasteb.in/documents"
         data = string.encode('utf-8')
         async with self.request.post(url=url, data=data) as haste_response:
             haste_key = (await haste_response.json())['key']
-            haste_url = f"http://hastebin.com/{haste_key}"
+            haste_url = f"http://hasteb.in/{haste_key}"
         return haste_url
 
     def get_webhook(self, url: str):

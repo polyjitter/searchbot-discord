@@ -306,7 +306,8 @@ class Search(commands.Cog):
                 term = ctx.message.content.replace(ctx.prefix, '', 1)
                 term = term.lstrip(' ')
                 # Does search
-                msg = await self._search_logic(term, ctx.channel.is_nsfw())
+                is_nsfw = ctx.channel.is_nsfw() if hasattr(ctx.channel, 'is_nsfw') else False
+                msg = await self._search_logic(term, is_nsfw)
 
                 # Logging
                 await self.info(

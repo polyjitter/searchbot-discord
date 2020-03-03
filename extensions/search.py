@@ -19,6 +19,8 @@ class Search(commands.Cog):
 
         # Main Stuff
         self.bot = bot
+        self.info = bot.logging.info
+        self.warn = bot.logging.warn
         self.request = bot.request
         self.instances = bot.instances
         self.emoji = "\U0001F50D"
@@ -57,7 +59,6 @@ class Search(commands.Cog):
             with open('searxes.txt') as f:
                 self.instances = f.read().split('\n')
         instance = random.sample(self.instances, k=1)[0]
-        print(f"Attempting to use {instance}")
 
         # Error Template
         error_msg = (
@@ -81,9 +82,6 @@ class Search(commands.Cog):
         # Figure out engines for different categories to get decent results.
         if category == 'videos':
             call += '&engines=bing+videos,google+videos'
-
-        print(call)
-
         # Make said API call
         try:
             async with self.request.get(call) as resp:
@@ -121,16 +119,20 @@ class Search(commands.Cog):
             # Instance Info
             msg += f"\n\n_Results retrieved from instance `{instance}`._"
 
+            return msg
+
         # Reached if error with returned results
         except (KeyError, IndexError) as e:
             # Logging
-            print(f"{e} with instance {instance}, trying again.")
+            self.warn(
+                f"A user encountered a(n) `{e}` with <{instance}> when searching for `{query}`. "
+                "Consider removing it or looking into it.",
+                name="Failed Instance"
+            )
 
             self.instances.remove(instance)  # Weed the instance out
             # Recurse until good response
             return await self._search_logic(query, is_nsfw)
-
-        return msg
 
     async def _instance_check(self, instance, info):
         """Checks the quality of an instance."""
@@ -172,84 +174,94 @@ class Search(commands.Cog):
     async def search(self, ctx, *, query: str):
         """Search online for general results."""
 
-        # Logging
-        print(f"\n\nNEW CALL: {ctx.author} from {ctx.guild}.\n")
-
-        # Handling
         async with ctx.typing():
             msg = await self._search_logic(query, ctx.channel.is_nsfw())
+            await self.info(
+                content=f"**{ctx.author}** searched for `{query}` in \"{ctx.guild}\" and got this:"
+                f"\n\n{msg}",
+                name="Search Results"
+            )
             await ctx.send(msg)
 
     @commands.command(aliases=['video'])
     async def videos(self, ctx, *, query: str):
         """Search online for videos."""
 
-        # Logging
-        print(f"\n\nNEW VIDEO CALL: {ctx.author} from {ctx.guild}.\n")
-
-        # Handling
         async with ctx.typing():
             msg = await self._search_logic(query, ctx.channel.is_nsfw(), 'videos')
+            await self.info(
+                content=f"**{ctx.author}** searched for `{query}` videos in \"{ctx.guild}\" and got this:"
+                f"\n\n{msg}",
+                name="Search Results"
+            )            
             await ctx.send(msg)
 
     @commands.command()
     async def music(self, ctx, *, query: str):
         """Search online for music."""
 
-        # Logging
-        print(f"\n\nNEW MUSIC CALL: {ctx.author} from {ctx.guild}.\n")
-
-        # Handling
         async with ctx.typing():
             msg = await self._search_logic(query, ctx.channel.is_nsfw(), 'music')
+            await self.info(
+                content=f"**{ctx.author}** searched for `{query}` music in \"{ctx.guild}\" and got this:"
+                f"\n\n{msg}",
+                name="Search Results"
+            )            
             await ctx.send(msg)
 
     @commands.command(aliases=['file'])
     async def files(self, ctx, *, query: str):
         """Search online for files."""
 
-        # Logging
-        print(f"\n\nNEW FILES CALL: {ctx.author} from {ctx.guild}.\n")
-
-        # Handling
         async with ctx.typing():
             msg = await self._search_logic(query, ctx.channel.is_nsfw(), 'files')
+            await self.info(
+                content=f"**{ctx.author}** searched for `{query}` files in \"{ctx.guild}\" and got this:"
+                f"\n\n{msg}",
+                name="Search Results"
+            )            
             await ctx.send(msg)
 
     @commands.command(aliases=['image'])
     async def images(self, ctx, *, query: str):
         """Search online for images."""
 
-        # Logging
-        print(f"\n\nNEW IMAGES CALL: {ctx.author} from {ctx.guild}.\n")
-
         # Handling
         async with ctx.typing():
             msg = await self._search_logic(query, ctx.channel.is_nsfw(), 'images')
+            await self.info(
+                content=f"**{ctx.author}** searched for `{query}` images in \"{ctx.guild}\" and got this:"
+                f"\n\n{msg}",
+                name="Search Results"
+            )            
             await ctx.send(msg)
 
     @commands.command()
     async def it(self, ctx, *, query: str):
         """Search online for IT-related information."""
 
-        # Logging
-        print(f"\n\nNEW IT CALL: {ctx.author} from {ctx.guild}.\n")
-
         # Handling
         async with ctx.typing():
             msg = await self._search_logic(query, ctx.channel.is_nsfw(), 'it')
+            await self.info(
+                content=f"**{ctx.author}** searched for `{query}` IT in \"{ctx.guild}\" and got this:"
+                f"\n\n{msg}",
+                name="Search Results"
+            )
             await ctx.send(msg)
 
     @commands.command(aliases=['map'])
     async def maps(self, ctx, *, query: str):
         """Search online for map information."""
 
-        # Logging
-        print(f"\n\nNEW MAP CALL: {ctx.author} from {ctx.guild}.\n")
-
         # Handling
         async with ctx.typing():
             msg = await self._search_logic(query, ctx.channel.is_nsfw(), 'map')
+            await self.info(
+                content=f"**{ctx.author}** searched for `{query}` maps in \"{ctx.guild}\" and got this:"
+                f"\n\n{msg}",
+                name="Search Results"
+            )            
             await ctx.send(msg)
 
     @commands.command()
@@ -287,9 +299,7 @@ class Search(commands.Cog):
 
         if isinstance(error, commands.CommandNotFound) or \
                 isinstance(error, commands.CheckFailure):
-            # Logging
-            print(f"\n\nNEW CALL: {ctx.author} from {ctx.guild}.\n")
-
+            
             # Handling
             async with ctx.typing():
                 # Prepares term
@@ -297,6 +307,15 @@ class Search(commands.Cog):
                 term = term.lstrip(' ')
                 # Does search
                 msg = await self._search_logic(term, ctx.channel.is_nsfw())
+
+                # Logging
+                await self.info(
+                    content=f"**{ctx.author}** searched for `{term}` in \"{ctx.guild}\" and got this:"
+                    f"\n\n{msg}",
+                    name="Search Results"
+                )
+
+
                 # Sends result
                 await ctx.send(msg)
 

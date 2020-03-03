@@ -5,7 +5,12 @@
 
 '''Online File'''
 
+import discord
+
+
 class Online():
+    """Provides various online utilities for your bot."""
+
     def __init__(self, bot):
         self.bot = bot
         self.request = bot.request
@@ -18,11 +23,16 @@ class Online():
         async with self.request.post(url=url, data=data) as haste_response:
             haste_key = (await haste_response.json())['key']
             haste_url = f"http://hastebin.com/{haste_key}"
-        # data = {'sprunge': ''}
-        # data['sprunge'] = string
-        # haste_url = await self.aioclient.post(url='http://sprunge.us',
-        # data=data)
         return haste_url
+
+    def get_webhook(self, url: str):
+        """Easily gets a webhook from a url."""
+
+        return discord.Webhook.from_url(
+            url,
+            adapter=discord.AsyncWebhookAdapter(self.request)
+        )
+
 
 def setup(bot):
     bot.online = Online(bot)

@@ -14,17 +14,14 @@ import json
 import os
 import asyncio
 import aiohttp
+import logging
 import random
-
 
 class Bot(commands.Bot):
     """Custom Bot Class that subclasses the commands.ext one"""
 
     def __init__(self, **options):
         """Initializes the main parts of the bot."""
-
-        # Logging
-        print('Initializing...\n')
 
         # Initializes parent class
         super().__init__(self._get_prefix_new, **options)
@@ -42,8 +39,6 @@ class Bot(commands.Bot):
         # Get Instances
         with open('searxes.txt') as f:
             self.instances = f.read().split('\n')
-
-        # Logging
 
     def _init_extensions(self):
         """Initializes extensions."""
@@ -163,73 +158,22 @@ async def on_command_error(ctx, error):
 
     # Lets other cogs handle CommandNotFound.
     # Change this if you want command not found handling
-    if isinstance(error, commands.CommandNotFound):
+    if isinstance(error, commands.CommandNotFound)or isinstance(error, commands.CheckFailure):
         return
 
     # Provides a very pretty embed if something's actually a dev's fault.
     elif isinstance(error, commands.CommandInvokeError):
 
         # Prerequisites
-        original_error = error.original
-        traceback_orig = traceback.format_tb(original_error.__traceback__)
-        traceback_orig = ''.join(traceback_orig)
-        appinfo = await bot.application_info()
-        original_exc = traceback.format_exception(
-            type(original_error), original_error, original_error.__traceback__)
-        print(original_exc)
-
-        # Main Message
-        embed_fallback = f"**An error occured: {type(original_error).__name__}. Please contact {appinfo.owner}.**"
-
-        # Hastebins Traceback
-        try:
-            url = await bot.online.hastebin(
-                ''.join(original_exc))
-        except Exception as e:
-            url = None
-            print(e)
-
-        # Embed Building
-        error_embed = discord.Embed(
-            title=(
-                f"{type(original_error).__name__} "
-                f"{'(Click for Hastebin)' if url else ''}"
-            ),
-            url=url if url else None,
-            color=0xFF0000,
-            description=(  # TODO Change if has logging
-                "This is (probably) a bug. This has not been automatically "
-                f"reported, so please give **{appinfo.owner}** a heads-up in DMs.")
-        )
-
-        # Formats Traceback
-        trace_content = (
-            "```py\n\nTraceback (most recent call last):"
-            "\n{}{}: {}```").format(
-                traceback_orig,
-                type(original_error).__name__,
-                original_error)
-
-        # Adds Traceback
-        error_embed.add_field(
-            name=(
-                f"`{type(original_error).__name__}` in "
-                f"command `{ctx.command.qualified_name}`"
-            ),
-            value=(trace_content[:1018] + '...```')
-            if len(trace_content) > 1024
-            else trace_content
-        )
+        embed_fallback = f"**An error occured: {type(error).__name__}. Please contact {bot.appinfo.owner}.**"        
+        error_embed = await bot.logging.error(error, ctx, ctx.command.cog.__name__)
 
         # Sending
         await ctx.send(embed_fallback, embed=error_embed)
 
     # If anything else goes wrong, just go ahead and send it in chat.
     else:
-        original_error = error
-        original_exc = traceback.format_exception(
-            type(original_error), original_error, original_error.__traceback__)
-        print(''.join(original_exc))
+        await bot.logging.error(error, ctx, ctx.command.cog.__name__)
         await ctx.send(error)
 # NOTE Bot Entry Point
 # Starts the bot

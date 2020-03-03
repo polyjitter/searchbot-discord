@@ -30,7 +30,7 @@ class BotList(commands.Cog, name='Bot List'):
 
         # top.gg clent
         self.dbl_client = dbl.DBLClient(
-            self.bot, self.dbots_token)
+            self.bot, self.dbl_token)
 
     async def _update_logic(self):
         """Handles all statistic updating for various different bot lists."""
@@ -80,7 +80,7 @@ class BotList(commands.Cog, name='Bot List'):
             # Call Prereqs
             dblcom_call += f"/bots/{self.bot.user.id}/stats"
             dblcom_data = {'guilds': len(self.bot.guilds)}
-            dblcom_headers = {'Authorization': self.dblcom_token}
+            dblcom_headers = {'Authorization': f"Bot self.dblcom_token"}
 
             # Call Handling
             async with self.request.post(dblcom_call,

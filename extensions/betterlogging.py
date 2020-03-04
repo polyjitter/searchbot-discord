@@ -56,7 +56,7 @@ class BetterLogging(commands.Cog):
             f"**{ctx.author}** in _\"{ctx.guild}\"_."
         )
 
-        await self.info(context=msg, name="Command Call")
+        await self.info(content=msg, name="Command Call")
 
     async def cog_check(self, ctx):
         return commands.is_owner()(ctx.command)

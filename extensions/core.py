@@ -60,8 +60,10 @@ class Core(commands.Cog):
 
         msg = f"__**{self.bot.user.name}**__ - _{self.bot.description}_\n\n"
         msg += f"This instance by **{self.bot.appinfo.owner}.**\n\n"
-        msg += "**Source Code:** _<https://github.com/taciturasa/searchbot-discord>_\n"
-        msg += "**Support Server:** _<https://discord.gg/4BpReNV>_\n\n"
+        if self.bot.config['REPO']:
+            msg += f"**Source Code:** _<{self.bot.config['REPO']}>_\n"
+        if self.bot.config['SERVER:']:
+            msg += f"**Support Server:** _<{self.bot.config['SERVER']}>_\n\n"
         msg += "_Note: Please attempt to contact the hoster of any separate instances before this server._\n"
         msg += f"_See **{ctx.prefix}**`help` for help, `invite` to add the bot, and `stats` for statistics._"
 
@@ -218,7 +220,7 @@ Number of extensions present: {len(ctx.bot.cogs)}
             await ctx.guild.leave()
         else:
             await ctx.send(
-                "**Can't leave!** _This channel is not inside a guild_")
+                "**Can't leave!** _This channel is not inside a guild._")
 
     def cog_unload(self):
         self.bot.help_command = self._original_help_command

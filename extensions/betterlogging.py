@@ -53,7 +53,7 @@ class BetterLogging(commands.Cog):
 
         msg = (
             f"**`{ctx.command.name}`** called by "
-            f"**{ctx.author}** in _\"{ctx.guild}\"_."
+            f"**{ctx.author}** in _\"{ctx.guild if ctx.guild else 'DMs'}\"_."
         )
 
         await self.info(content=msg, name="Command Call")

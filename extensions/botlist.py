@@ -28,9 +28,12 @@ class BotList(commands.Cog, name='Bot List'):
         self.bod_token = bot.config['BOD']
         self.dblcom_token = bot.config['DBLCOM']
 
-        # top.gg clent
+        # top.gg client
         self.dbl_client = dbl.DBLClient(
             self.bot, self.dbl_token)
+
+        # Start update loop
+        self.update_stats.start()
 
     async def _update_logic(self):
         """Handles all statistic updating for various different bot lists."""
@@ -139,6 +142,9 @@ class BotList(commands.Cog, name='Bot List'):
 
         responses = await self._update_logic()
         print(responses)  # TODO See other todo
+
+    def cog_unload(self):
+        self.update_stats.cancel()
 
 
 def setup(bot):

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Search Functionality
-# Provides search results from SearX
+# Better Logging
+# Adds some better logging with utils.logging.
 
-'''Search Cog'''
+'''Better Logging Cog'''
 
 import discord
 from discord.ext import commands

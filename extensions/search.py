@@ -40,7 +40,7 @@ class Search(commands.Cog):
             'bdsm', 'sexy', 'xxx',
             'orgasm', 'masturbation',
             'erotic', 'creampie',
-            'fap'
+            'fap', 'nude'
         ]
         nono_sites = [
             'xvideos', 'pornhub',

@@ -10,6 +10,7 @@ from discord.ext import commands
 import aiohttp
 import random
 import sys
+from typing import List
 
 
 class Search(commands.Cog):
@@ -25,7 +26,8 @@ class Search(commands.Cog):
         self.instances = bot.instances
         self.emoji = "\U0001F50D"
 
-    async def _search_logic(self, query: str, is_nsfw: bool = False, category: str = None):
+    async def _search_logic(self, query: str, is_nsfw: bool = False, 
+                            category: str = None) -> str:
         """Provides search logic for all search commands."""
 
         # NSFW Filtering
@@ -138,27 +140,27 @@ class Search(commands.Cog):
             # Recurse until good response
             return await self._search_logic(query, is_nsfw)
 
-    async def _instance_check(self, instance, info):
+    async def _instance_check(self, instance: str, content: dict) -> bool:
         """Checks the quality of an instance."""
 
         # Makes sure proper values exist
-        if 'error' in info:
+        if 'error' in content:
             return False
-        if not ('engines' in info and 'initial' in info['timing']):
+        if not ('engines' in content and 'initial' in content['timing']):
             return False
-        if not ('google' in info['engines'] and 'enabled' in info['engines']['google']):
+        if not ('google' in content['engines'] and 'enabled' in content['engines']['google']):
             return False
 
         # Makes sure google is enabled
-        if not info['engines']['google']['enabled']:
+        if not content['engines']['google']['enabled']:
             return False
 
         # Makes sure is not Tor
-        if info['network_type'] != 'normal':
+        if content['network_type'] != 'normal':
             return False
 
         # Only picks instances that are fast enough
-        timing = int(info['timing']['initial'])
+        timing = int(content['timing']['initial'])
         if timing > 0.20:
             return False
 
@@ -275,7 +277,7 @@ class Search(commands.Cog):
 
         msg = await ctx.send('<a:updating:403035325242540032> Refreshing instance list...\n\n'
                              '(Due to extensive quality checks, this may take a bit.)')
-        plausible = []
+        plausible: List[str] = []
 
         # Get, parse, and quality check all instances
         async with self.request.get('https://searx.space/data/instances.json') as r:
@@ -285,8 +287,8 @@ class Search(commands.Cog):
 
             # Quality Check
             for i in instances:
-                info = instances.get(i)
-                is_good = await self._instance_check(i, info)
+                content = instances.get(i)
+                is_good: bool = await self._instance_check(i, content)
                 if is_good:
                     plausible.append(i)
 

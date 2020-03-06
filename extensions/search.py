@@ -37,12 +37,16 @@ class Search(commands.Cog):
             'slut', 'cum', 'jizz',
             'semen', 'cooch', 'coochie',
             'pussy', 'penis', 'fetish',
-            'bdsm'
+            'bdsm', 'sexy', 'xxx',
+            'orgasm', 'masturbation',
+            'erotic', 'creampie',
+            'fap'
         ]
         nono_sites = [
             'xvideos', 'pornhub',
             'xhamster', 'xnxx',
-            'youporn'
+            'youporn', 'xxx',
+            'freexcafe'
         ]
 
         if not is_nsfw:

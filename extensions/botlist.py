@@ -57,8 +57,7 @@ class BotList(commands.Cog, name='Bot List'):
             async with self.request.post(dbots_call,
                                          json=dbots_data,
                                          headers=dbots_headers) as resp:
-                resp_json = await resp.json()
-                responses['dbots'] = resp_json
+                responses['dbots'] = resp.status
 
         # bots.ondiscord.xyz
         if self.bod_token != '':

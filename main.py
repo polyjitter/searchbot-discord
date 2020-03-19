@@ -218,7 +218,10 @@ class Bot(commands.Bot):
             return
 
         # Maintenance mode
-        elif self.maintenance and not message.author.id == bot.appinfo.owner.id:
+        elif (
+            self.maintenance 
+            and not message.author.id == bot.appinfo.owner.id
+        ):
             return
 
         # Empty ping for assistance
@@ -245,14 +248,20 @@ async def on_command_error(ctx, error):
 
     # Lets other cogs handle CommandNotFound.
     # Change this if you want command not found handling
-    if isinstance(error, commands.CommandNotFound)or isinstance(error, commands.CheckFailure):
+    if (
+        isinstance(error, commands.CommandNotFound)
+        or isinstance(error, commands.CheckFailure)
+    ):
         return
 
     # Provides a very pretty embed if something's actually a dev's fault.
     elif isinstance(error, commands.CommandInvokeError):
 
         # Prerequisites
-        embed_fallback = f"**An error occured: {type(error).__name__}. Please contact {bot.appinfo.owner}.**"
+        embed_fallback = (
+            f"**An error occured: {type(error).__name__}. "
+            f"Please contact {bot.appinfo.owner}.**"
+        )
         error_embed = await bot.logging.error(
             error, ctx,
             ctx.command.cog.qualified_name if ctx.command.cog.qualified_name

@@ -1,23 +1,39 @@
 {
-  "VERSION": "x.x type",
-  "DESCRIPTION": "a basic base for bots, designed by taciturasa.",
-  "REPO": "",
-  "SERVER": "",
-  "MAINTENANCE": false,
+  "VERSION": "1.9 testing",
+  "DESCRIPTION": "a minimalist search utility bot for discord, designed by taciturasa.",
+  "REPO": "https://github.com/taciturasa/searchbot-discord",
+  "SERVER": "https://discord.gg/4BpReNV",
   "TOKEN": "",
-  "DBL": "",
-  "DBOTS": "",
-  "BOD": "",
-  "DBLCOM": "",
-  "PREFIX": ["basicbot!"],
+  "PREFIX": ["search!"],
+
+  "MAINTENANCE": false,
   "CASE_INSENSITIVE": true,
   "PREFIXLESS_DMS": true,
   "MENTION_ASSIST": true,
   "CUSTOM_HELP": true,
-  "INFO_HOOK": "",
-  "WARN_HOOK": "",
-  "ERROR_HOOK": "",
-  "DEBUG_HOOK": "",
-  "PERMS": null,
-  "BLOCKED": []
+  
+  "PERMS": 378944,
+  "BLOCKED": [],
+
+  "BOTLISTS": {
+    "DBL": "",
+    "DBOTS": "",
+    "BOD": "",
+    "DBLCOM": ""
+  },
+
+  "HOOKS": {
+    "INFO_HOOK": "",
+    "WARN_HOOK": "",
+    "ERROR_HOOK": "",
+    "DEBUG_HOOK": ""
+  },
+
+  "RETHINK": {
+	  "DB": "",
+	  "USERNAME": "",
+	  "PASSWORD": "",
+	  "HOST": "",
+    "PORT": null
+  }
 }

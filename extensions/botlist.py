@@ -23,10 +23,10 @@ class BotList(commands.Cog, name='Bot List'):
         self.emoji = "\U0001F5F3"
 
         # List Tokens
-        self.dbl_token = bot.config['DBL']
-        self.dbots_token = bot.config['DBOTS']
-        self.bod_token = bot.config['BOD']
-        self.dblcom_token = bot.config['DBLCOM']
+        self.dbl_token = bot.config['BOTLISTS']['DBL']
+        self.dbots_token = bot.config['BOTLISTS']['DBOTS']
+        self.bod_token = bot.config['BOTLISTS']['BOD']
+        self.dblcom_token = bot.config['BOTLISTS']['DBLCOM']
 
         # top.gg client
         self.dbl_client = dbl.DBLClient(
@@ -139,7 +139,7 @@ class BotList(commands.Cog, name='Bot List'):
     @tasks.loop(minutes=15.0)
     async def update_stats(self):
         """Automatically updates statistics every 15 minutes."""
-
+        
         responses = await self._update_logic()
         print(responses)  # TODO See other todo
 

@@ -15,6 +15,7 @@ import cpuinfo
 import math
 import psutil
 from extensions.models.help import TaciHelpCommand
+from typing import List, Optional
 
 
 class Core(commands.Cog):
@@ -29,11 +30,37 @@ class Core(commands.Cog):
 
         # Help Command
         self._original_help_command = bot.help_command
-        if bot.config['CUSTOM_HELP']:
+        if bot.custom_help:
             bot.help_command = TaciHelpCommand()
         bot.help_command.cog = self
 
-    def _humanbytes(self, B) -> str:  # function lifted from StackOverflow
+    def _create_tutorial(self, guild) -> str:
+        """Creates the tutorial message."""
+
+        prefixes: str = f"`@{self.bot.user.name}`"
+        if self.bot.prefix:
+            others: str = ', '.join(f'`{p}`' for p in self.bot.prefix)
+            prefixes += f', {others}'
+
+        msg: str = (
+            f"**Hi!** Thanks for adding me to `{guild.name}`.\n\n"
+            f"I'm **{self.bot.user.name}** - _{self.bot.description}_\n\n"
+            f"My prefix{'es are' if self.bot.prefix else ' is'}: "
+            f"{prefixes}.\n\n"
+            "You may find more information with `help`.\n\n"
+            "_Please note that this bot may log errors, guild names, "
+            "command calls/contents, and the names of command users "
+            "for debug and maintenance purposes. "
+            "These logs are shared with nobody "
+            "other than those who help develop this bot. "
+            "If you do not agree to this, please remove this bot._\n\n"
+            "_You may recall this message at any time with `tutorial`._"
+        )
+
+        return msg
+
+    # function lifted from StackOverflow
+    def _humanbytes(self, B) -> str:
         """Return the given bytes as a human friendly KB, MB, GB, or TB string."""
 
         B = float(B)
@@ -53,6 +80,8 @@ class Core(commands.Cog):
             return '{0:.2f} GB'.format(B/GB)
         elif TB <= B:
             return '{0:.2f} TB'.format(B/TB)
+        else:
+            return 'ERROR'
 
     @commands.command(aliases=['info', 'source', 'server'])
     async def about(self, ctx):
@@ -60,10 +89,10 @@ class Core(commands.Cog):
 
         msg = f"__**{self.bot.user.name}**__ - _{self.bot.description}_\n\n"
         msg += f"This instance by **{self.bot.appinfo.owner}.**\n\n"
-        if self.bot.config['REPO']:
-            msg += f"**Source Code:** _<{self.bot.config['REPO']}>_\n"
-        if self.bot.config['SERVER:']:
-            msg += f"**Support Server:** _<{self.bot.config['SERVER']}>_\n\n"
+        if self.bot.repo:
+            msg += f"**Source Code:** _<{self.bot.repo}>_\n"
+        if self.bot.support_server:
+            msg += f"**Support Server:** _<{self.bot.support_server}>_\n\n"
         msg += "_Note: Please attempt to contact the hoster of any separate instances before this server._\n"
         msg += f"_See **{ctx.prefix}**`help` for help, `invite` to add the bot, and `stats` for statistics._"
 
@@ -79,10 +108,20 @@ class Core(commands.Cog):
             f"*<https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot"
         )
 
-        if self.bot.config['PERMS'] is not None:
-            msg += f"&permissions={self.bot.config['PERMS']}>*"
+        if self.bot.perms:
+            msg += f"&permissions={self.bot.perms}>*"
         else:
             msg += ">*"
+
+        await ctx.send(msg)
+
+    @commands.command()
+    async def tutorial(self, ctx):
+        """Resends the tutorial message."""
+        if ctx.guild:
+            msg: str = self._create_tutorial(ctx.guild)
+        else:
+            msg: str = "**Cannot send tutorial in DMs!**"
 
         await ctx.send(msg)
 
@@ -116,10 +155,10 @@ Number of extensions present: {len(ctx.bot.cogs)}
         ping = (after - before) * 1000
         await pong.edit(content="`PING discordapp.com {}ms`".format(int(ping)))
 
-    @commands.group(aliases=['extensions', 'ext'], 
+    @commands.group(aliases=['extensions', 'ext'],
                     invoke_without_command=True)
     @commands.is_owner()
-    async def extend(self, ctx, name:str = None):
+    async def extend(self, ctx, name: str = None):
         """Provides status of extensions and lets you hotswap extensions."""
 
         # Provides status of extension
@@ -212,18 +251,80 @@ Number of extensions present: {len(ctx.bot.cogs)}
     @commands.is_owner()
     async def leave(self, ctx):
         """Makes the bot leave the server this was called in."""
-        
+
         if ctx.guild:
             await ctx.send(
                 "\U0001F4A8 **Leaving server.** "
-                "_If you want me back, add me or get an admin to._")
+                "_If you want me back, add me or get an admin to._"
+            )
             await ctx.guild.leave()
         else:
             await ctx.send(
-                "**Can't leave!** _This channel is not inside a guild._")
+                "**Can't leave!** _This channel is not inside a guild._"
+            )
 
     def cog_unload(self):
         self.bot.help_command = self._original_help_command
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        """Sends owner notification and guild tutorial."""
+
+        # Prerequisites
+        guild_msg: str = self._create_tutorial(guild)
+        channel: Optional[discord.TextChannel] = None
+        owner: discord.Member = guild.owner
+
+        # Tutorial Message
+        # Get text channels
+        text_channels = []
+        for c in guild.channels:
+            if type(c) is discord.TextChannel:
+                text_channels.append(c)
+
+        # Sets channel to general if it exists
+        for c in guild.channels:
+            if c.name == 'general':
+                channel = c
+
+        # XXX This looks like garbage
+        # Else posts in first open channel
+        if not channel:
+            for c in guild.channels:
+                if c.permissions_for(guild.me).send_messages:
+                    channel = c
+
+        # Send tutorial message
+        if channel:
+            await channel.send(guild_msg)
+        else:
+            guild_msg += (
+                "\n\n_I am sending this message to you as there were no "
+                "channels I could send messages to in your server. "
+                "Please give me send message permissions in the channels "
+                "You wish to use me in!_"
+            )
+
+            await guild.owner.send(guild_msg)
+            return  # Ends here if there are no good channels to send to
+
+        # Owner Disclosure
+        # Message Building
+        owner_msg = (
+            "**Hi there!**\n\n"
+            f"I am **{self.bot.user.name}** - _{self.bot.description}_\n\n"
+            "I am messaging you to inform you I was added to your server, "
+            f"`{guild.name}`, by someone "
+            "with **Manage Server** permissions.\n\n"
+            f"I have sent a tutorial message to `{channel.name}` "
+            "describing how I may be used.\n\n"
+            "If you do not wish to have me there, "
+            "simply kick me from the server.\n\n"
+            "_Thanks for your time!_"
+        )
+
+        # Send owner disclosure
+        await guild.owner.send(owner_msg)
 
 
 def setup(bot):

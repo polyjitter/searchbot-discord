@@ -23,8 +23,12 @@ class Search(commands.Cog):
         self.info = bot.logging.info
         self.warn = bot.logging.warn
         self.request = bot.request
-        self.instances = bot.instances
         self.emoji = "\U0001F50D"
+
+        # Get Instances
+        with open('searxes.txt') as f:
+            self.instances = f.read().split('\n')
+
 
     async def _search_logic(self, query: str, is_nsfw: bool = False, 
                             category: str = None) -> str:

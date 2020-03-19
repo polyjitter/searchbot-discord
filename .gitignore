@@ -1,6 +1,8 @@
 # Bot Related
 config.json
 extensions/__pycache__/
+utils/__pycache__/
+.mypy_cache/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -52,6 +54,4 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
-extensions/__pycache__/core.cpython-38.pyc
-extensions/__pycache__/core.cpython-38.pyc
-extensions/__pycache__/core.cpython-38.pyc
+

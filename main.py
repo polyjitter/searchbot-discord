@@ -12,10 +12,12 @@ from discord.ext import commands
 import traceback
 import json
 import os
+import sys
 import asyncio
 import aiohttp
-import logging
-import random
+import rethinkdb
+from typing import List, Optional
+
 
 class Bot(commands.Bot):
     """Custom Bot Class that subclasses the commands.ext one"""
@@ -27,24 +29,38 @@ class Bot(commands.Bot):
         super().__init__(self._get_prefix_new, **options)
 
         # Setup
-        self.extensions_list = []
+        self.extensions_list: List[str] = []
+
         with open('config.json') as f:
             self.config = json.load(f)
-            self.prefix = self.config['PREFIX']
-            self.version = self.config['VERSION']
-            self.maintenance = self.config['MAINTENANCE']
-            self.description = self.config['DESCRIPTION']
-            self.case_insensitive = self.config['CASE_INSENSITIVE']
 
-        # Get Instances
-        with open('searxes.txt') as f:
-            self.instances = f.read().split('\n')
+            # Info
+            self.prefix: List[str] = self.config['PREFIX']
+            self.version: str = self.config['VERSION']
+            self.description: str = self.config['DESCRIPTION']
+            self.repo: str = self.config['REPO']
+            self.support_server: str = self.config['SERVER']
+            self.perms: int = self.config['PERMS']
+
+            # Toggles
+            self.maintenance: bool = self.config['MAINTENANCE']
+            self.case_insensitive: bool = self.config['CASE_INSENSITIVE']
+            self.custom_help: bool = self.config['CUSTOM_HELP']
+            self.mention_assist: bool = self.config['MENTION_ASSIST']
+            self.prefixless_dms: bool = self.config['PREFIXLESS_DMS']
+
+        # RethinkDB
+        if self.config['RETHINK']['DB']:
+            self.re = rethinkdb.RethinkDB()
+            self.re.set_loop_type('asyncio')
+            self.rdb: str = self.config['RETHINK']['DB']
+            self.conn = None
+            self.rtables: List[str] = []
 
     def _init_extensions(self):
         """Initializes extensions."""
 
         # Utils
-
         # Avoids race conditions with online
         utils_dir = os.listdir('extensions/utils')
         if 'online.py' in utils_dir:
@@ -80,16 +96,50 @@ class Bot(commands.Bot):
                         f'extensions.{ext[:-3]}')
                 except Exception as e:
                     print(e)
-        
+
+    async def _init_rethinkdb(self):
+        """Initializes RethinkDB."""
+
+        # Prerequisites
+        dbc = self.config['RETHINK']
+
+        # Error handling the initialization
+        try:
+            # Create connection
+            self.conn = await self.re.connect(
+                host=dbc['HOST'],
+                port=dbc['PORT'],
+                db=dbc['DB'],
+                user=dbc['USERNAME'],
+                password=dbc['PASSWORD']
+            )
+
+            # Create or get database
+            dbs = await self.re.db_list().run(self.conn)
+            if self.rdb not in dbs:
+                print('Database not present. Creating...')
+                await self.re.db_create(self.rdb).run(self.conn)
+
+            # Append any existing tables to rtables
+            tables = await self.re.db(self.rdb).table_list().run(self.conn)
+            self.rtables.extend(tables)
+
+        # Exit if fails bc bot can't run without db
+        except Exception as e:
+            print('RethinkDB init error!\n{}: {}'.format(type(e).__name__, e))
+            sys.exit(1)
+
+        print('RethinkDB initialisation successful.')
 
     async def _get_prefix_new(self, bot, msg):
         """More flexible check for prefix."""
 
         # Adds empty prefix if in DMs
-        if isinstance(msg.channel, discord.DMChannel) and self.config['PREFIXLESS_DMS']:
+        if isinstance(msg.channel, discord.DMChannel) and self.prefixless_dms:
             plus_empty = self.prefix.copy()
             plus_empty.append('')
             return commands.when_mentioned_or(*plus_empty)(bot, msg)
+
         # Keeps regular if not
         else:
             return commands.when_mentioned_or(*self.prefix)(bot, msg)
@@ -125,9 +175,14 @@ class Bot(commands.Bot):
                 status=discord.Status.online
             )
 
+        # NOTE Rethink Entry Point
+        # Initializes all rethink stuff
+        if hasattr(self, 'rdb') and not self.rtables:
+            await self._init_rethinkdb()
+
         # NOTE Extension Entry Point
         # Loads core, which loads all other extensions
-        if self.extensions_list == []:
+        if not self.extensions_list:
             self._init_extensions()
 
         print('Initialized.\n')
@@ -167,7 +222,7 @@ class Bot(commands.Bot):
             return
 
         # Empty ping for assistance
-        elif message.content in mentions and self.config.get('MENTION_ASSIST'):
+        elif message.content in mentions and self.mention_assist:
             assist_msg = (
                 "**Hi there! How can I help?**\n\n"
                 # Two New Lines Here
@@ -197,12 +252,12 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.CommandInvokeError):
 
         # Prerequisites
-        embed_fallback = f"**An error occured: {type(error).__name__}. Please contact {bot.appinfo.owner}.**"        
+        embed_fallback = f"**An error occured: {type(error).__name__}. Please contact {bot.appinfo.owner}.**"
         error_embed = await bot.logging.error(
-            error, ctx, 
+            error, ctx,
             ctx.command.cog.qualified_name if ctx.command.cog.qualified_name
             else "DMs"
-            )
+        )
 
         # Sending
         await ctx.send(embed_fallback, embed=error_embed)
@@ -210,7 +265,7 @@ async def on_command_error(ctx, error):
     # If anything else goes wrong, just go ahead and send it in chat.
     else:
         await bot.logging.error(
-            error, ctx, 
+            error, ctx,
             ctx.command.cog.qualified_name if ctx.command.cog.qualified_name
             else "DMs"
         )

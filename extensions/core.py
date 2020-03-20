@@ -48,6 +48,15 @@ class Core(commands.Cog):
             f"My prefix{'es are' if self.bot.prefix else ' is'}: "
             f"{prefixes}.\n\n"
             "You may find more information with `help`.\n\n"
+            "You may also find our support server and repo with `about`"
+        )
+
+        if 'extensions.botlist' in self.extensions_list:
+            msg += ", or vote and review this bot with `vote`."
+        else:
+            msg += ".\n\n"
+
+        msg += (
             "_Please note that this bot may log errors, guild names, "
             "command calls/contents, and the names of command users "
             "for debug and maintenance purposes. "

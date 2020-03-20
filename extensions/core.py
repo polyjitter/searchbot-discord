@@ -52,7 +52,7 @@ class Core(commands.Cog):
         )
 
         if 'extensions.botlist' in self.extensions_list:
-            msg += ", or vote and review this bot with `vote`."
+            msg += ", or vote and review this bot with `vote`.\n\n"
         else:
             msg += ".\n\n"
 

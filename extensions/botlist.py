@@ -20,6 +20,7 @@ class BotList(commands.Cog, name='Bot List'):
         # Main Stuff
         self.bot = bot
         self.request = bot.request
+        self.info = bot.logging.info
         self.emoji = "\U0001F5F3"
 
         # List Tokens
@@ -27,6 +28,8 @@ class BotList(commands.Cog, name='Bot List'):
         self.dbots_token = bot.config['BOTLISTS']['DBOTS']
         self.bod_token = bot.config['BOTLISTS']['BOD']
         self.dblcom_token = bot.config['BOTLISTS']['DBLCOM']
+        self.blspace_token = bot.config['BOTLISTS']['BLSPACE']
+        self.dad_token = bot.config['BOTLISTS']['DAD']
 
         # top.gg client
         self.dbl_client = dbl.DBLClient(
@@ -42,6 +45,7 @@ class BotList(commands.Cog, name='Bot List'):
         dbots_call = "https://discord.bots.gg/api/v1"
         bod_call = "https://bots.ondiscord.xyz/bot-api/"
         dblcom_call = "https://discordbotlist.com/api"
+        dad_call = "https://api.discordapps.dev/api/v2/"
         responses = {}
 
         # Calls
@@ -97,6 +101,23 @@ class BotList(commands.Cog, name='Bot List'):
             except Exception as e:
                 responses['dbl'] = e
 
+        # discordapps.dev
+        if self.dad_token != '':
+
+            # Call Prereqs
+            dad_call += f"/bots/{self.bot.user.id}"
+            dad_data = {'bot': {'count': len(self.bot.guilds)}}
+            dad_headers = {'Authorization': self.dad_token}
+
+            # Call Handling
+            async with self.request.post(dad_call,
+                                         json=dad_data,
+                                         headers=dad_headers) as resp:
+                responses['dad'] = resp.status
+
+        log_msg = f"**Botlists updated!**\n\n```{responses}```"
+        await self.info(content=log_msg, name='List Update')
+
         # Finalization
         return responses
 
@@ -112,7 +133,7 @@ class BotList(commands.Cog, name='Bot List'):
         )
 
         # Links
-        # XXX This is really stupidly done, I'm going to find a way to redo it.
+        # XXX This sucks
         if self.dbots_token != '':
             msg += f"_discord.bots.gg_ <https://discord.bots.gg/bots/{self.bot.user.id}/>\n"
         if self.bod_token != '':
@@ -121,6 +142,12 @@ class BotList(commands.Cog, name='Bot List'):
             msg += f"_discordbotlist.com_ <https://discordbotlist.com/bots/{self.bot.user.id}/>\n"
         if self.dbl_token != '':
             msg += f"_top.gg_ <https://top.gg/bot/{self.bot.user.id}/>\n"
+        if self.bot.config['BOTLISTS']['TABFT_LINK']:
+            msg += f"_thereisabotforthat.com_ <{self.bot.config['BOTLISTS']['TABFT_LINK']}>\n"
+        if self.dad_token != '':
+            msg += f"_discordapps.dev_ <https://discordapps.dev/en-GB/bots/{self.bot.user.id}/>\n"
+        if self.blspace_token != '':
+            msg += f"_botlist.space_ <https://botlist.space/bot/{self.bot.user.id}\n>"
 
         # Sending
         await ctx.send(msg)
@@ -132,7 +159,6 @@ class BotList(commands.Cog, name='Bot List'):
 
         msg = await ctx.send("<a:loading:393852367751086090> **Updating...**")
         responses = await self._update_logic()
-        print(responses)  # TODO Look at responses and figure out error handling
         await msg.edit(content="**Updated!**")
 
     @tasks.loop(minutes=15.0)
@@ -140,7 +166,6 @@ class BotList(commands.Cog, name='Bot List'):
         """Automatically updates statistics every 15 minutes."""
         
         responses = await self._update_logic()
-        print(responses)  # TODO See other todo
 
     def cog_unload(self):
         self.update_stats.cancel()

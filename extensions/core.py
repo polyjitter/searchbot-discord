@@ -96,13 +96,14 @@ class Core(commands.Cog):
     async def about(self, ctx):
         """Returns information about this bot."""
 
-        msg = f"__**{self.bot.user.name}**__ - _{self.bot.description}_\n\n"
-        msg += f"This instance by **{self.bot.appinfo.owner}.**\n\n"
+        msg = (
+            f"__**{self.bot.user.name}**__ - _{self.bot.description}_\n\n"
+            f"This instance by **{self.bot.appinfo.owner}.**\n\n"
+        )
         if self.bot.repo:
             msg += f"**Source Code:** _<{self.bot.repo}>_\n"
         if self.bot.support_server:
             msg += f"**Support Server:** _<{self.bot.support_server}>_\n\n"
-        msg += "_Note: Please attempt to contact the hoster of any separate instances before this server._\n"
         msg += f"_See **{ctx.prefix}**`help` for help, `invite` to add the bot, and `stats` for statistics._"
 
         await ctx.send(msg)

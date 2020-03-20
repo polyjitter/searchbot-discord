@@ -480,36 +480,6 @@ class Developer(commands.Cog):
             inline=False)
         await message.edit(content='', embed=embed)
 
-    # @commands.command()
-    # async def git(self, ctx, sub, flags=""):
-    #     """Runs some git commands in Discord."""
-
-    #     if sub == "gud":
-    #         if not flags:
-    #             return await ctx.send("```You are now so gud!```")
-    #         else:
-    #             return await ctx.send(
-    #                 "```{} is now so gud!```".format(flags))
-    #     elif sub == "rekt":
-    #         if not flags:
-    #             return await ctx.send("```You got #rekt!```")
-    #         else:
-    #             return await ctx.send(
-    #                 "```{} got #rekt!```".format(flags))
-    #     else:
-    #         process_msg = await ctx.send(
-    #             "<a:typing:401162479041773568> Processing...")
-    #         process = subprocess.Popen(
-    #             f"git {sub + flags}",
-    #             stdout=subprocess.PIPE,
-    #             stderr=subprocess.PIPE)
-    #         res = process.communicate()
-    #         if res[0] == b'':
-    #             content = "Successful!"
-    #         else:
-    #             content = res[0].decode("utf8")
-    #         return await process_msg.edit(content=f"```{content}```")
-
     @commands.command()
     async def error(self, ctx):
         """Makes the bot error out."""

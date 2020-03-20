@@ -118,6 +118,9 @@ class Search(commands.Cog):
                         if n in r['url']:
                             results.remove(r)
 
+            query = discord.utils.escape_mentions(query)
+            query = discord.utils.escape_markdown(query)
+
             # Header
             msg = f"Showing **{amt}** results for `{query}`. \n\n"
             # Expanded Result

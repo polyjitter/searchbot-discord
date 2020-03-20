@@ -161,7 +161,7 @@ class BotList(commands.Cog, name='Bot List'):
         responses = await self._update_logic()
         await msg.edit(content="**Updated!**")
 
-    @tasks.loop(minutes=15.0)
+    @tasks.loop(minutes=30.0)
     async def update_stats(self):
         """Automatically updates statistics every 15 minutes."""
         

@@ -96,16 +96,31 @@ class Core(commands.Cog):
     async def about(self, ctx):
         """Returns information about this bot."""
 
+        # Header
         msg = (
             f"__**{self.bot.user.name}**__ - _{self.bot.description}_\n\n"
             f"This instance by **{self.bot.appinfo.owner}.**\n\n"
         )
+
+        # Repo and support server
         if self.bot.repo:
             msg += f"**Source Code:** _<{self.bot.repo}>_\n"
         if self.bot.support_server:
             msg += f"**Support Server:** _<{self.bot.support_server}>_\n\n"
-        msg += f"_See **{ctx.prefix}**`help` for help, `invite` to add the bot, and `stats` for statistics._"
 
+        # Properly handle blank prefixes
+        if ctx.prefix == '':
+            prefix: str = ''
+        else:
+            prefix: str = f"**{ctx.prefix}**"
+
+        # Footer
+        msg += (
+            f"_See {prefix}`help` for help, `invite` to add the bot, "
+            "and `stats` for statistics._"
+        )
+
+        # Sending
         await ctx.send(msg)
 
     @commands.command(aliases=['addbot', 'connect', 'join'])
@@ -115,7 +130,8 @@ class Core(commands.Cog):
         msg = (
             "**Thanks for checking me out!**\n\n"
             "Use the following link to add me:\n"
-            f"*<https://discordapp.com/oauth2/authorize?client_id={self.bot.user.id}&scope=bot"
+            "*<https://discordapp.com/oauth2/authorize"
+            f"?client_id={self.bot.user.id}&scope=bot"
         )
 
         if self.bot.perms:

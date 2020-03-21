@@ -1,0 +1,6 @@
+discord.py
+aiohttp
+py-cpuinfo
+psutil
+rethinkdb
+dblpy

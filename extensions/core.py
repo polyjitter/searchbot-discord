@@ -98,7 +98,8 @@ class Core(commands.Cog):
 
         # Header
         msg = (
-            f"__**{self.bot.user.name}**__ - _{self.bot.description}_\n\n"
+            f"__**{self.bot.user.name}**__ - _{self.bot.description}_\n"
+            "Written in `discord.py`.\n\n"
             f"This instance by **{self.bot.appinfo.owner}.**\n\n"
         )
 
@@ -165,8 +166,9 @@ class Core(commands.Cog):
 Total RAM: {total_ram}
 Available RAM: {available_ram}
 RAM used by bot: {usage}
-Number of bot commands: {len(ctx.bot.commands)}
-Number of extensions present: {len(ctx.bot.cogs)}
+Number of bot commands: {len(self.bot.commands)}
+Number of extensions present: {len(self.bot.cogs)}
+Guild count: {len(self.bot.guilds)}
 ```
 """
         await ctx.send(msg)

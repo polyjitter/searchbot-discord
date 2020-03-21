@@ -41,6 +41,8 @@ class Bot(commands.Bot):
             self.repo: str = self.config['REPO']
             self.support_server: str = self.config['SERVER']
             self.perms: int = self.config['PERMS']
+            if not self.config['CACHE']:
+                self.max_messages = None
 
             # Toggles
             self.maintenance: bool = self.config['MAINTENANCE']

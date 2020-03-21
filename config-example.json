@@ -4,6 +4,7 @@
   "REPO": "https://github.com/taciturasa/searchbot-discord",
   "SERVER": "https://discord.gg/4BpReNV",
   "TOKEN": "",
+  "CACHE": false,
   "PREFIX": ["search!"],
 
   "MAINTENANCE": false,

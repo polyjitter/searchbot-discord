@@ -22,28 +22,25 @@ class Logging():
 
         # Sets info hook first
         self.info_hook = self.online.get_webhook(
-            bot.config['HOOKS']['INFO_HOOK'] 
-            if bot.config['HOOKS']['INFO_HOOK']
+            bot.config['HOOKS']['INFO_HOOK']) \
+            if bot.config['HOOKS']['INFO_HOOK'] \
             else None
-        )
+        
 
         # Sets other hooks or defaults them
         if self.info_hook:
             self.warn_hook = self.online.get_webhook(
-                bot.config['HOOKS']['WARN_HOOK'] 
-                if bot.config['HOOKS']['WARN_HOOK']
+                bot.config['HOOKS']['WARN_HOOK']) \
+                if bot.config['HOOKS']['WARN_HOOK'] \
                 else self.info_hook
-            )
             self.error_hook = self.online.get_webhook(
-                bot.config['HOOKS']['ERROR_HOOK'] 
-                if bot.config['HOOKS']['ERROR_HOOK']
+                bot.config['HOOKS']['ERROR_HOOK']) \
+                if bot.config['HOOKS']['ERROR_HOOK'] \
                 else self.info_hook
-            )
             self.debug_hook = self.online.get_webhook(
-                bot.config['HOOKS']['DEBUG_HOOK'] 
-                if bot.config['HOOKS']['DEBUG_HOOK']
+                bot.config['HOOKS']['DEBUG_HOOK']) \
+                if bot.config['HOOKS']['DEBUG_HOOK'] \
                 else self.info_hook
-            )
 
         # If no hooks, nothing is there
         else:

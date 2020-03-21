@@ -132,7 +132,7 @@ class Logging():
 
     async def error(self, error: Exception, ctx: Context, name: Optional[str]):
         """Logs errors and sends them to the appropriate places."""
-
+         
         # Prerequisites
         error_embed = await self._create_error_embed(error, ctx)
 

@@ -8,6 +8,8 @@ utils/__pycache__/
 __pycache__/
 *.py[cod]
 
+*.pyc
+
 # C extensions
 *.so
 

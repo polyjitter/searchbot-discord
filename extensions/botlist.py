@@ -20,7 +20,7 @@ class BotList(commands.Cog, name='Bot List'):
         # Main Stuff
         self.bot = bot
         self.request = bot.request
-        self.info = bot.logging.info
+        self.debug = bot.logging.debug
         self.emoji = "\U0001F5F3"
 
         # List Tokens
@@ -116,7 +116,7 @@ class BotList(commands.Cog, name='Bot List'):
                 responses['dad'] = resp.status
 
         log_msg = f"**Botlists updated!**\n\n```{responses}```"
-        await self.info(content=log_msg, name='List Update')
+        await self.debug(content=log_msg, name='List Update')
 
         # Finalization
         return responses

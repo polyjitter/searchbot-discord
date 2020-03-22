@@ -9,6 +9,7 @@ import discord
 from discord.ext import commands
 import aiohttp
 import random
+from urllib import parse
 import sys
 from typing import List
 
@@ -277,6 +278,46 @@ class Search(commands.Cog):
             )
             await ctx.send(msg)
 
+    @commands.command(aliases=['urban', 'ud'])
+    async def urbandictionary(self, ctx, *, query: str):
+        """Pull data from Urban Dictionary."""
+
+        # Handling
+        async with ctx.typing():
+            number = 1
+            if " | " in query:
+                query, number = query.rsplit(" | ", 1)
+            search = parse.quote(query)
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f"http://api.urbandictionary.com/v0/define?term={search}") as resp:
+                    resp = await resp.json()
+                    if not resp["list"]:
+                        await ctx.send(f"`{query}`` couldn't be found on Urban Dictionary.")
+                    else:
+                        try:
+                            top_result = resp["list"][int(number) - 1]
+                            embed = discord.Embed(title=top_result["word"], description=top_result["definition"],
+                                                url=top_result["permalink"], color=ctx.author.color)
+                            if top_result["example"]:
+                                embed.add_field(name="Example:",
+                                                value=top_result["example"], inline=False)
+                            embed.add_field(name="👍", value = top_result["thumbs_up"])
+                            embed.add_field(name="👎", value = top_result["thumbs_down"])
+
+                            
+                            embed.set_author(name=top_result["author"],
+                                            icon_url="https://apprecs.org/gp/images/app-icons/300/2f/info.tuohuang.urbandict.jpg")
+                            number = str(int(number) + 1)
+                            embed.set_footer(text=str(len(
+                                resp["list"])) + f" results were found. To see a different result, use {ctx.prefix}ud {query} | {number}.")
+                            try:
+                                await ctx.send("", embed=embed)
+                                
+                            except Exception as e:
+                                await ctx.send(top_result["definition"])
+                        except Exception as e:
+                                print(e)      
+
     @commands.command()
     async def anime(self, ctx, *, query: str):
         """Lookup anime information online, uses the https://kitsu.io/ public API."""
@@ -323,7 +364,7 @@ class Search(commands.Cog):
                         await ctx.send(embed=embed)
 
                     except Exception as e:
-                        
+
                         aired = f"{anime['attributes']['startDate']}{thing}"
                         template = f"""
 url: {url}
@@ -388,7 +429,7 @@ Powered by kitsu.io"""
                         await ctx.send(embed=embed)
 
                     except Exception as e:
-                        
+
                         aired = f"{manga['attributes']['startDate']}{thing}"
                         template = f"""
 url: {url}

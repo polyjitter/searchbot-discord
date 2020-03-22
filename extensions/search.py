@@ -294,6 +294,8 @@ class Search(commands.Cog):
                     title = f'{anime["attributes"]["canonicalTitle"]}'
                     anime_id = anime["id"]
                     url = f"https://kitsu.io/anime/{anime_id}"
+                    thing = '' if not anime['attributes'][
+                        'endDate'] else f' to {anime["attributes"]["endDate"]}'
 
                     embed = discord.Embed(
                         title=f"{title}", color=ctx.author.color, url=url)
@@ -306,8 +308,7 @@ class Search(commands.Cog):
                                     value=anime["attributes"]["ageRating"])
                     embed.add_field(
                         name="Status", value=anime["attributes"]["status"])
-                    thing = '' if not anime['attributes'][
-                        'endDate'] else f' to {anime["attributes"]["endDate"]}'
+
                     embed.add_field(
                         name="Aired", value=f"{anime['attributes']['startDate']}{thing}")
                     embed.add_field(name="Episodes",
@@ -318,8 +319,27 @@ class Search(commands.Cog):
                         url=anime['attributes']["posterImage"]["original"])
                     embed.set_footer(
                         text=f"Requested by {ctx.author.name} | Powered by kitsu.io", icon_url=ctx.author.avatar_url_as(format="png"))
-                    await ctx.send(embed=embed)
-                session.close()
+                    try:
+                        await ctx.send(embed=embed)
+
+                    except Exception as e:
+                        
+                        aired = f"{anime['attributes']['startDate']}{thing}"
+                        template = f"""
+url: {url}
+Title: {title}
+Average Rating: {anime["attributes"]["averageRating"]}
+Popularity Rank: {anime["attributes"]["popularityRank"]}
+Age Rating: {anime["attributes"]["ageRating"]}
+Status: {anime["attributes"]["status"]}
+Aired: {aired}
+Type: {anime['attributes']["showType"]}
+
+
+Powered by kitsu.io"""
+                        await ctx.send(template)
+
+                await session.close()
 
     @commands.command()
     async def manga(self, ctx, *, query: str):
@@ -364,8 +384,27 @@ class Search(commands.Cog):
                     embed.set_thumbnail(
                         url=manga['attributes']["posterImage"]["original"])
 
-                    await ctx.send(embed=embed)
-                session.close()
+                    try:
+                        await ctx.send(embed=embed)
+
+                    except Exception as e:
+                        
+                        aired = f"{manga['attributes']['startDate']}{thing}"
+                        template = f"""
+url: {url}
+Title: {title}
+Average Rating: {manga["attributes"]["averageRating"]}
+Popularity Rank: {manga["attributes"]["popularityRank"]}
+Age Rating: {manga["attributes"]["ageRating"]}
+Status: {manga["attributes"]["status"]}
+Aired: {aired}
+Type: {manga['attributes']["showType"]}
+
+
+Powered by kitsu.io"""
+                        await ctx.send(template)
+
+                await session.close()
 
     @commands.command()
     @commands.is_owner()

@@ -296,11 +296,11 @@ class Search(commands.Cog):
                     else:
                         try:
                             top_result = resp["list"][int(number) - 1]
-                            embed = discord.Embed(title=top_result["word"], description=top_result["definition"],
+                            embed = discord.Embed(title=top_result["word"], description=top_result["definition"][0:425] + "...",
                                                 url=top_result["permalink"], color=ctx.author.color)
                             if top_result["example"]:
                                 embed.add_field(name="Example:",
-                                                value=top_result["example"], inline=False)
+                                                value=top_result["example"][0:100] + "...", inline=False)
                             embed.add_field(name="👍", value = top_result["thumbs_up"])
                             embed.add_field(name="👎", value = top_result["thumbs_down"])
 
@@ -311,7 +311,8 @@ class Search(commands.Cog):
                             embed.set_footer(text=str(len(
                                 resp["list"])) + f" results were found. To see a different result, use {ctx.prefix}ud {query} | {number}.")
                             try:
-                                await ctx.send("", embed=embed)
+                                
+                                await ctx.send(f"{top_result['word']}: {top_result['permalink']}", embed=embed)
                                 
                             except Exception as e:
                                 await ctx.send(top_result["definition"])
@@ -320,7 +321,7 @@ class Search(commands.Cog):
 
     @commands.command()
     async def anime(self, ctx, *, query: str):
-        """Lookup anime information online, uses the https://kitsu.io/ public API."""
+        """Lookup anime information online, uses the <https://kitsu.io/> public API."""
         base = "https://kitsu.io/api/edge/"
         # Handling
         async with ctx.typing():
@@ -361,7 +362,8 @@ class Search(commands.Cog):
                     embed.set_footer(
                         text=f"Requested by {ctx.author.name} | Powered by kitsu.io", icon_url=ctx.author.avatar_url_as(format="png"))
                     try:
-                        await ctx.send(embed=embed)
+
+                        await ctx.send(f"{title}: <{url}>", embed=embed)
 
                     except Exception as e:
 
@@ -384,7 +386,7 @@ Powered by kitsu.io"""
 
     @commands.command()
     async def manga(self, ctx, *, query: str):
-        """Lookup manga information online, uses the https://kitsu.io/ public API."""
+        """Lookup manga information online, uses the <https://kitsu.io/> public API."""
         base = "https://kitsu.io/api/edge/"
         # Handling
         async with ctx.typing():
@@ -426,7 +428,8 @@ Powered by kitsu.io"""
                         url=manga['attributes']["posterImage"]["original"])
 
                     try:
-                        await ctx.send(embed=embed)
+
+                        await ctx.send(f"{title}: <{url}>", embed=embed)
 
                     except Exception as e:
 

@@ -312,7 +312,7 @@ class Search(commands.Cog):
                                 resp["list"])) + f" results were found. To see a different result, use {ctx.prefix}ud {query} | {number}.")
                             try:
                                 
-                                await ctx.send(f"{top_result['word']}: {top_result['permalink']}", embed=embed)
+                                await ctx.send(f"**{top_result['word']}** - <{top_result['permalink']}>", embed=embed)
                                 
                             except Exception as e:
                                 await ctx.send(top_result["definition"])
@@ -363,7 +363,7 @@ class Search(commands.Cog):
                         text=f"Requested by {ctx.author.name} | Powered by kitsu.io", icon_url=ctx.author.avatar_url_as(format="png"))
                     try:
 
-                        await ctx.send(f"{title}: <{url}>", embed=embed)
+                        await ctx.send(f"**{title}** - <{url}>", embed=embed)
 
                     except Exception as e:
 
@@ -429,7 +429,7 @@ Powered by kitsu.io"""
 
                     try:
 
-                        await ctx.send(f"{title}: <{url}>", embed=embed)
+                        await ctx.send(f"**{title}** - <{url}>", embed=embed)
 
                     except Exception as e:
 

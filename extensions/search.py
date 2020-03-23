@@ -54,7 +54,8 @@ class Search(commands.Cog):
             'xvideos', 'pornhub',
             'xhamster', 'xnxx',
             'youporn', 'xxx',
-            'freexcafe', 'sex.com'
+            'freexcafe', 'sex.com',
+            'e621'
         ]
 
         if not is_nsfw:

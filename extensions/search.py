@@ -30,7 +30,7 @@ class Search(commands.Cog):
             self.instances = f.read().split('\n')
 
 
-    async def _search_logic(self, query: str, is_nsfw: bool = False, 
+    async def _search_logic(self, query: str, is_nsfw: bool = False,
                             category: str = None) -> str:
         """Provides search logic for all search commands."""
 
@@ -47,7 +47,8 @@ class Search(commands.Cog):
             'orgasm', 'masturbation',
             'erotic', 'creampie',
             'fap', 'nude', 'orgasm',
-            'squirting'
+            'squirting', 'yiff',
+            'e621'
         ]
         nono_sites = [
             'xvideos', 'pornhub',
@@ -58,7 +59,7 @@ class Search(commands.Cog):
 
         if not is_nsfw:
             for i in nono_words:
-                if i in query:
+                if i in query.replace(" ", ""):
                     return (
                         "**Sorry!** That query included language "
                         "we cannot accept in a non-NSFW channel. "
@@ -207,7 +208,7 @@ class Search(commands.Cog):
                 content=f"**{ctx.author}** searched for `{query}` videos in \"{ctx.guild}\" and got this:"
                 f"\n\n{msg}",
                 name="Search Results"
-            )            
+            )
             await ctx.send(msg)
 
     @commands.command()
@@ -220,7 +221,7 @@ class Search(commands.Cog):
                 content=f"**{ctx.author}** searched for `{query}` music in \"{ctx.guild}\" and got this:"
                 f"\n\n{msg}",
                 name="Search Results"
-            )            
+            )
             await ctx.send(msg)
 
     @commands.command(aliases=['file'])
@@ -233,7 +234,7 @@ class Search(commands.Cog):
                 content=f"**{ctx.author}** searched for `{query}` files in \"{ctx.guild}\" and got this:"
                 f"\n\n{msg}",
                 name="Search Results"
-            )            
+            )
             await ctx.send(msg)
 
     @commands.command(aliases=['image'])
@@ -247,7 +248,7 @@ class Search(commands.Cog):
                 content=f"**{ctx.author}** searched for `{query}` images in \"{ctx.guild}\" and got this:"
                 f"\n\n{msg}",
                 name="Search Results"
-            )            
+            )
             await ctx.send(msg)
 
     @commands.command()
@@ -275,7 +276,7 @@ class Search(commands.Cog):
                 content=f"**{ctx.author}** searched for `{query}` maps in \"{ctx.guild}\" and got this:"
                 f"\n\n{msg}",
                 name="Search Results"
-            )            
+            )
             await ctx.send(msg)
 
     @commands.command()
@@ -313,7 +314,7 @@ class Search(commands.Cog):
 
         if isinstance(error, commands.CommandNotFound) or \
                 isinstance(error, commands.CheckFailure):
-            
+
             # Handling
             async with ctx.typing():
                 # Prepares term

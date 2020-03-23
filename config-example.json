@@ -1,43 +1,43 @@
 {
-  "VERSION": "1.9 testing",
-  "DESCRIPTION": "a minimalist search utility bot for discord, designed by taciturasa.",
-  "REPO": "https://github.com/taciturasa/searchbot-discord",
-  "SERVER": "https://discord.gg/4BpReNV",
-  "TOKEN": "",
-  "CACHE": false,
-  "PREFIX": ["search!"],
-
-  "MAINTENANCE": false,
-  "CASE_INSENSITIVE": true,
-  "PREFIXLESS_DMS": true,
-  "MENTION_ASSIST": true,
-  "CUSTOM_HELP": true,
+    "VERSION": "1.9 testing",
+    "DESCRIPTION": "a minimalist search utility bot for discord, designed by taciturasa.",
+    "REPO": "https://github.com/taciturasa/searchbot-discord",
+    "SERVER": "https://discord.gg/4BpReNV",
+    "TOKEN": "",
+    "CACHE": false,
+    "PREFIX": ["search!"],
   
-  "PERMS": 378944,
-  "BLOCKED": [],
-
-  "BOTLISTS": {
-    "DBL": "",
-    "DBOTS": "",
-    "BOD": "",
-    "DBLCOM": "",
-    "BLSPACE": "",
-    "TABFT_LINK": "",
-    "DAD": ""
-  },
-
-  "HOOKS": {
-    "INFO_HOOK": "",
-    "WARN_HOOK": "",
-    "ERROR_HOOK": "",
-    "DEBUG_HOOK": ""
-  },
-
-  "RETHINK": {
-	  "DB": "",
-	  "USERNAME": "",
-	  "PASSWORD": "",
-	  "HOST": "",
-    "PORT": null
+    "MAINTENANCE": false,
+    "CASE_INSENSITIVE": true,
+    "PREFIXLESS_DMS": true,
+    "MENTION_ASSIST": true,
+    "CUSTOM_HELP": true,
+    
+    "PERMS": 378944,
+    "BLOCKED": [],
+  
+    "BOTLISTS": {
+      "DBL": "",
+      "DBOTS": "",
+      "BOD": "",
+      "DBLCOM": "",
+      "BLSPACE": "",
+      "TABFT_LINK": "",
+      "DAD": ""
+    },
+  
+    "HOOKS": {
+      "INFO_HOOK": "",
+      "WARN_HOOK": "",
+      "ERROR_HOOK": "",
+      "DEBUG_HOOK": ""
+    },
+  
+    "RETHINK": {
+        "DB": "",
+        "USERNAME": "",
+        "PASSWORD": "",
+        "HOST": "",
+      "PORT": null
+    }
   }
-}

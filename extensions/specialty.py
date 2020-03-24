@@ -163,8 +163,12 @@ Powered by kitsu.io"""
 
                 resp = await resp.json()
                 resp = resp['data']
+
+                query = discord.utils.escape_mentions(query)
+                query = discord.utils.escape_markdown(query)
+
                 if not resp:
-                    return await ctx.send("The requested manga coudn't be found")
+                    return await ctx.send(f"No results for `{query}`.")
 
                 manga = resp[0]
                 title = f'{manga["attributes"]["canonicalTitle"]}'

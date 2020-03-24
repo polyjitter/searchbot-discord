@@ -7,8 +7,6 @@
 
 import discord
 from discord.ext import commands
-import aiohttp
-import random
 from typing import List
 from extensions.models import SearchExceptions
 import html2text
@@ -155,7 +153,7 @@ class Search(commands.Cog, name="Basic"):
             other_results: List[str] = []
             for r in results[1:count]:
                 title = self.tomd.handle(r['title']).rstrip('\n')
-                url = results[0]['url']
+                url = results['url']
                 other_results.append(f"**{title}** <{url}>")
             other_msg: str = "\n".join(other_results)
 

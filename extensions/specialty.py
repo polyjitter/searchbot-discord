@@ -159,52 +159,51 @@ Powered by kitsu.io"""
 
         # Handling
         async with ctx.typing():
-            async with aiohttp.ClientSession() as session:
-                async with session.get(base + "manga", params={"filter[text]": query}) as resp:
+            async with self.request.get(base + "manga", params={"filter[text]": query}) as resp:
 
-                    resp = await resp.json()
-                    resp = resp['data']
-                    if not resp:
-                        return await ctx.send("The requested manga coudn't be found")
+                resp = await resp.json()
+                resp = resp['data']
+                if not resp:
+                    return await ctx.send("The requested manga coudn't be found")
 
-                    manga = resp[0]
-                    title = f'{manga["attributes"]["canonicalTitle"]}'
-                    manga_id = manga["id"]
-                    url = f"https://kitsu.io/manga/{manga_id}"
+                manga = resp[0]
+                title = f'{manga["attributes"]["canonicalTitle"]}'
+                manga_id = manga["id"]
+                url = f"https://kitsu.io/manga/{manga_id}"
 
-                    embed = discord.Embed(
-                        title=f"{title}", color=ctx.author.color, url=url)
-                    embed.description = manga["attributes"]["synopsis"][0:425] + "..."
-                    if manga["attributes"]["averageRating"]:
-                        embed.add_field(name="Average Rating",
-                                        value=manga["attributes"]["averageRating"])
-                    embed.add_field(name="Popularity Rank",
-                                    value=manga["attributes"]["popularityRank"])
-                    if manga["attributes"]["ageRating"]:
-                        embed.add_field(name="Age Rating",
-                                        value=manga["attributes"]["ageRating"])
-                    embed.add_field(
-                        name="Status", value=manga["attributes"]["status"])
-                    thing = '' if not manga['attributes'][
-                        'endDate'] else f' to {manga["attributes"]["endDate"]}'
-                    embed.add_field(
-                        name="Published", value=f"{manga['attributes']['startDate']}{thing}")
-                    if manga['attributes']['chapterCount']:
-                        embed.add_field(name="Chapters",
-                                        value=manga['attributes']["chapterCount"])
-                    embed.add_field(
-                        name="Type", value=manga['attributes']["mangaType"])
-                    embed.set_thumbnail(
-                        url=manga['attributes']["posterImage"]["original"])
+                embed = discord.Embed(
+                    title=f"{title}", color=ctx.author.color, url=url)
+                embed.description = manga["attributes"]["synopsis"][0:425] + "..."
+                if manga["attributes"]["averageRating"]:
+                    embed.add_field(name="Average Rating",
+                                    value=manga["attributes"]["averageRating"])
+                embed.add_field(name="Popularity Rank",
+                                value=manga["attributes"]["popularityRank"])
+                if manga["attributes"]["ageRating"]:
+                    embed.add_field(name="Age Rating",
+                                    value=manga["attributes"]["ageRating"])
+                embed.add_field(
+                    name="Status", value=manga["attributes"]["status"])
+                thing = '' if not manga['attributes'][
+                    'endDate'] else f' to {manga["attributes"]["endDate"]}'
+                embed.add_field(
+                    name="Published", value=f"{manga['attributes']['startDate']}{thing}")
+                if manga['attributes']['chapterCount']:
+                    embed.add_field(name="Chapters",
+                                    value=manga['attributes']["chapterCount"])
+                embed.add_field(
+                    name="Type", value=manga['attributes']["mangaType"])
+                embed.set_thumbnail(
+                    url=manga['attributes']["posterImage"]["original"])
 
-                    try:
+                try:
 
-                        await ctx.send(f"**{title}** - <{url}>", embed=embed)
+                    await ctx.send(f"**{title}** - <{url}>", embed=embed)
 
-                    except Exception as e:
+                except Exception :
 
-                        aired = f"{manga['attributes']['startDate']}{thing}"
-                        template = f"""
+                    aired = f"{manga['attributes']['startDate']}{thing}"
+                    template = f"""
 url: {url}
 Title: {title}
 Average Rating: {manga["attributes"]["averageRating"]}
@@ -216,9 +215,7 @@ Type: {manga['attributes']["showType"]}
 
 
 Powered by kitsu.io"""
-                        await ctx.send(template)
-
-                await session.close()
+                    await ctx.send(template)
 
 
 def setup(bot):

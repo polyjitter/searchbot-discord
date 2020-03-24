@@ -158,14 +158,14 @@ class BotList(commands.Cog, name='Bot List'):
         """Updates statistics on botlists."""
 
         msg = await ctx.send("<a:loading:393852367751086090> **Updating...**")
-        responses = await self._update_logic()
+        await self._update_logic()
         await msg.edit(content="**Updated!**")
 
     @tasks.loop(minutes=30.0)
     async def update_stats(self):
         """Automatically updates statistics every 15 minutes."""
         
-        responses = await self._update_logic()
+        await self._update_logic()
 
     def cog_unload(self):
         self.update_stats.cancel()

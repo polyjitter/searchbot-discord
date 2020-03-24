@@ -166,7 +166,7 @@ class Search(commands.Cog, name="Basic"):
 
             # Sends message
             await self.info(
-                f"**New Search** - {ctx.author} in {ctx.guild}\n\n{msg}",
+                f"**New Search** - `{ctx.author}` in `{ctx.guild}`\n\n{msg}",
                 name="_basic_search"
             )
             await ctx.send(msg)

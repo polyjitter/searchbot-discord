@@ -267,6 +267,14 @@ Guild count: {len(self.bot.guilds)}
         # Message Sending
         await ctx.send(msg)
 
+    @commands.command()
+    @commands.is_owner()
+    async def toggle_debug(self, ctx):
+        """Toggles debug while running."""
+
+        self.bot.debug_toggle = not self.bot.debug_toggle
+        await ctx.send(f"Set debug mode to `{self.bot.debug_toggle}`.")
+
     @commands.command(aliases=['exit', 'reboot'])
     @commands.is_owner()
     async def restart(self, ctx):

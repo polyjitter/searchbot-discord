@@ -9,14 +9,13 @@
 
 import discord
 from discord.ext import commands
-import traceback
 import json
 import os
 import sys
-import asyncio
 import aiohttp
 import rethinkdb
-from typing import List, Optional
+from typing import List
+from extensions.models import SearchExceptions
 
 
 class Bot(commands.Bot):
@@ -30,6 +29,7 @@ class Bot(commands.Bot):
 
         # Setup
         self.extensions_list: List[str] = []
+        self.debug_toggle = False
 
         with open('config.json') as f:
             self.config = json.load(f)
@@ -221,7 +221,7 @@ class Bot(commands.Bot):
 
         # Maintenance mode
         elif (
-            self.maintenance 
+            self.maintenance
             and not message.author.id == bot.appinfo.owner.id
         ):
             return
@@ -249,12 +249,25 @@ async def on_command_error(ctx, error):
     """Handles all errors stemming from ext.commands."""
 
     # Lets other cogs handle CommandNotFound.
-    # Change this if you want command not found handling
+    # Change this if you want command not found handling.
     if (
         isinstance(error, commands.CommandNotFound)
         or isinstance(error, commands.CheckFailure)
     ):
         return
+
+    # Custom message for if an argument is missing.
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send(
+            f"**Missing Argument!** A `{error.param.name}` is needed."
+        )
+
+    elif isinstance(error, SearchExceptions.SafesearchFail):
+        await ctx.send(
+            "**Sorry!** That query included language "
+            "we cannot accept in a non-NSFW channel. "
+            "Please try again in an NSFW channel."
+        )
 
     # Provides a very pretty embed if something's actually a dev's fault.
     elif isinstance(error, commands.CommandInvokeError):

@@ -19,13 +19,13 @@ class Logging():
         self.request = bot.request
         self.online = bot.online
         self.maintenance = bot.maintenance
+        self.debug_toggle = bot.debug_toggle
 
         # Sets info hook first
         self.info_hook = self.online.get_webhook(
             bot.config['HOOKS']['INFO_HOOK']) \
             if bot.config['HOOKS']['INFO_HOOK'] \
             else None
-        
 
         # Sets other hooks or defaults them
         if self.info_hook:
@@ -51,7 +51,7 @@ class Logging():
 
         # Prerequisites
         formatted_tb = traceback.format_tb(error.__traceback__)
-        formatted_tb = ''.join(formatted_tb)
+        tb_str = ''.join(formatted_tb)
         original_exc = traceback.format_exception(
             type(error), error, error.__traceback__)
 
@@ -77,7 +77,7 @@ class Logging():
         trace_content = (
             "```py\n\nTraceback (most recent call last):"
             "\n{}{}: {}```").format(
-                formatted_tb,
+                tb_str,
                 type(error).__name__,
                 error)
 
@@ -95,8 +95,8 @@ class Logging():
         # Provides completed embed
         return error_embed
 
-    async def info(self, content: str, 
-                   embed: Optional[discord.Embed] = None, 
+    async def info(self, content: str,
+                   embed: Optional[discord.Embed] = None,
                    name: Optional[str] = None):
         """Logs info and sends it to the appropriate places."""
 
@@ -112,15 +112,17 @@ class Logging():
         else:
             return
 
-    async def warn(self, content: str, 
-                    embed: Optional[discord.Embed] = None, 
-                    name: Optional[str] = None):
+    async def warn(self, content: str,
+                   embed: Optional[discord.Embed] = None,
+                   name: Optional[str] = None):
         """Logs warnings and sends them to the appropriate places."""
 
         if self.warn_hook:
             return await self.warn_hook.send(
                 content=content,
-                username=f"{self.bot.user.name} - {name if name else 'unknown'}",
+                username=(
+                    f"{self.bot.user.name} - {name if name else 'unknown'}"
+                ),
                 avatar_url=str(self.bot.user.avatar_url),
                 embed=embed
             )
@@ -129,7 +131,7 @@ class Logging():
 
     async def error(self, error: Exception, ctx: Context, name: Optional[str]):
         """Logs errors and sends them to the appropriate places."""
-         
+
         # Prerequisites
         error_embed = await self._create_error_embed(error, ctx)
 
@@ -144,7 +146,9 @@ class Logging():
             )
             await self.error_hook.send(
                 content=fallback,
-                username=f"{self.bot.user.name} - {name if name else 'unknown'}",
+                username=(
+                    f"{self.bot.user.name} - {name if name else 'unknown'}"
+                ),
                 avatar_url=str(self.bot.user.avatar_url),
                 embed=error_embed
             )
@@ -163,15 +167,17 @@ class Logging():
         )
         return error_embed
 
-    async def debug(self, content: str, 
-                    embed: Optional[discord.Embed] = None, 
+    async def debug(self, content: str,
+                    embed: Optional[discord.Embed] = None,
                     name: Optional[str] = None):
         """Logs warnings and sends them to the appropriate places."""
 
-        if self.debug_hook and self.maintenance:
+        if self.debug_hook and (self.maintenance or self.debug_toggle):
             return await self.debug_hook.send(
-                content=content,
-                username=f"{self.bot.user.name} - {name if name else 'unknown'}",
+                content=f"```{content}```",
+                username=(
+                    f"{self.bot.user.name} - {name if name else 'unknown'}"
+                ),
                 avatar_url=str(self.bot.user.avatar_url),
                 embed=embed
             )

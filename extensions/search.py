@@ -153,7 +153,7 @@ class Search(commands.Cog, name="Basic"):
             other_results: List[str] = []
             for r in results[1:count]:
                 title = self.tomd.handle(r['title']).rstrip('\n')
-                url = results['url']
+                url = r['url']
                 other_results.append(f"**{title}** <{url}>")
             other_msg: str = "\n".join(other_results)
 

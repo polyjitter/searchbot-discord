@@ -10,6 +10,7 @@ from discord.ext import commands
 from typing import List
 from extensions.models import SearchExceptions
 import html2text
+from urllib.parse import quote_plus
 import re
 
 
@@ -71,15 +72,6 @@ class Search(commands.Cog, name="Basic"):
         if any(n in query for n in nono_words):
             raise SearchExceptions.SafesearchFail('Query had NSFW.')
 
-        # Scrape or not
-        # if self.scrape_token != '':
-        #     base = (
-        #         "http://api.scrapestack.com/scrape"
-        #         f"?access_key={self.scrape_token}"
-        #         f"&url=https://api.qwant.com/api"
-        #     )
-        #     print(base)
-        # else:
         base = "https://api.qwant.com/api"
 
         # Safesearch
@@ -99,6 +91,15 @@ class Search(commands.Cog, name="Basic"):
             "&locale=en_US"
             "&uiv=4"
         )
+
+        # Scrape or not
+        if self.scrape_token != '':
+            search_url = (
+                "http://api.scrapestack.com/scrape"
+                f"?access_key={self.scrape_token}"
+                f"&url={quote_plus(search_url)}"
+            )
+
         await self.debug(search_url, name="_search_logic")
 
         # Searching
@@ -242,8 +243,6 @@ class Search(commands.Cog, name="Basic"):
                     "we cannot accept in a non-NSFW channel. "
                     "Please try again in an NSFW channel."
                 )
-            except Exception as e:
-                print(e)
 
 
 def setup(bot):

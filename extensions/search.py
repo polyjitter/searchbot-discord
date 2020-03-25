@@ -10,6 +10,7 @@ from discord.ext import commands
 from typing import List
 from extensions.models import SearchExceptions
 import html2text
+import re
 
 
 class Search(commands.Cog, name="Basic"):
@@ -109,6 +110,7 @@ class Search(commands.Cog, name="Basic"):
         }
         async with self.request.get(search_url, headers=headers) as resp:
             to_parse = await resp.json()
+            print(to_parse)
 
             # Sends results
             return to_parse['data']['result']['items']
@@ -154,15 +156,25 @@ class Search(commands.Cog, name="Basic"):
             for r in results[1:count]:
                 title = self.tomd.handle(r['title']).rstrip('\n')
                 url = r['url']
-                other_results.append(f"**{title}** <{url}>")
+                other_results.append(f"**{title}** {url}")
             other_msg: str = "\n".join(other_results)
 
             # Builds message
             msg = (
                 f"Showing **{count}** results for `{query_display}`.\n\n"
-                f"**{first_title}** <{first_url}>\n{first_desc}\n\n"
+                f"**{first_title}** {first_url}\n{first_desc}\n\n"
                 f"{other_msg}\n\n_Powered by Qwant._"
             )
+
+            print(msg)
+
+            msg = re.sub(
+                r'(https?://(?:www\.)?[-a-zA-Z0-9@:%._+~#=]+\.'
+                r'[a-zA-Z0-9()]+\b[-a-zA-Z0-9()@:%_+.~#?&/=]*)',
+                r'<\1>',
+                msg
+            )
+
 
             # Sends message
             await self.info(

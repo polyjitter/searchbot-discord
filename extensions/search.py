@@ -190,41 +190,41 @@ class Search(commands.Cog, name="Basic"):
 
         await self._basic_search(ctx, query)
 
-    @commands.command(aliases=['video'])
-    async def videos(self, ctx, *, query: str):
-        """Search online for videos."""
+    # @commands.command(aliases=['video'])
+    # async def videos(self, ctx, *, query: str):
+    #     """Search online for videos."""
 
-        await self._basic_search(ctx, query, 'videos')
+    #     await self._basic_search(ctx, query, 'videos')
 
-    @commands.command()
-    async def music(self, ctx, *, query: str):
-        """Search online for music."""
+    # @commands.command()
+    # async def music(self, ctx, *, query: str):
+    #     """Search online for music."""
 
-        await self._basic_search(ctx, query, 'music')
+    #     await self._basic_search(ctx, query, 'music')
 
-    @commands.command(aliases=['file'])
-    async def files(self, ctx, *, query: str):
-        """Search online for files."""
+    # @commands.command(aliases=['file'])
+    # async def files(self, ctx, *, query: str):
+    #     """Search online for files."""
 
-        await self._basic_search(ctx, query, 'files')
+    #     await self._basic_search(ctx, query, 'files')
 
-    @commands.command(aliases=['image'])
-    async def images(self, ctx, *, query: str):
-        """Search online for images."""
+    # @commands.command(aliases=['image'])
+    # async def images(self, ctx, *, query: str):
+    #     """Search online for images."""
 
-        await self._basic_search(ctx, query, 'images')
+    #     await self._basic_search(ctx, query, 'images')
 
-    @commands.command()
-    async def it(self, ctx, *, query: str):
-        """Search online for IT-related information."""
+    # @commands.command()
+    # async def it(self, ctx, *, query: str):
+    #     """Search online for IT-related information."""
 
-        await self._basic_search(ctx, query, 'it')
+    #     await self._basic_search(ctx, query, 'it')
 
-    @commands.command(aliases=['map'])
-    async def maps(self, ctx, *, query: str):
-        """Search online for map information."""
+    # @commands.command(aliases=['map'])
+    # async def maps(self, ctx, *, query: str):
+    #     """Search online for map information."""
 
-        await self._basic_search(ctx, query, 'maps')
+    #     await self._basic_search(ctx, query, 'maps')
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):

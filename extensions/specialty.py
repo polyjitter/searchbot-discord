@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Search Functionality
-# Provides search results from SearX
+# Speciality Search
+# Provides search for specific sites.
+# Developed by source#5843.
 
 '''Search Cog'''
 

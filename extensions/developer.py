@@ -3,6 +3,10 @@
 # Developer functions
 # Provides functions only useable for developers
 
+# XXX A lot of the code in this cog is from an old bot I used to develop on.
+# As such, it may have lots of bad things and weird stuff.
+# Here be dragons and all that.
+
 '''Developer Cog'''
 
 import discord

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # Search Functionality
-# Provides search results from SearX
+# Provides search results from Qwant
 
 '''Search Cog'''
 

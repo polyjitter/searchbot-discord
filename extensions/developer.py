@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-# Developer functions
-# Provides functions only useable for developers
+# Developer Cog
+# Provides functions only usable for developers
 
 # XXX A lot of the code in this cog is from an old bot I used to develop on.
 # As such, it may have lots of bad things and weird stuff.

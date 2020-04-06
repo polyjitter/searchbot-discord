@@ -7,14 +7,16 @@
 
 '''Main File'''
 
-import discord
-from discord.ext import commands
 import json
 import os
 import sys
-import aiohttp
-import rethinkdb
 from typing import List
+
+import aiohttp
+import discord
+from discord.ext import commands
+import rethinkdb
+
 from extensions.models import SearchExceptions
 
 

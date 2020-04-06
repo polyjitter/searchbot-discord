@@ -6,9 +6,9 @@
 
 '''Search Cog'''
 
+import aiohttp
 import discord
 from discord.ext import commands
-import aiohttp
 from urllib import parse
 
 

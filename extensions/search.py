@@ -5,13 +5,15 @@
 
 '''Search Cog'''
 
+from typing import List
+
 import discord
 from discord.ext import commands
-from typing import List
-from extensions.models import SearchExceptions
 import html2text
-from urllib.parse import quote_plus
 import re
+from urllib.parse import quote_plus
+
+from extensions.models import SearchExceptions
 
 
 class Search(commands.Cog, name="Basic"):

@@ -9,20 +9,22 @@
 
 '''Developer Cog'''
 
-import discord
-from discord.ext import commands
-import os
-import aiohttp
-import random
-import datetime
 import collections
 from contextlib import redirect_stdout
-import traceback
-import time
-import io
+import datetime
 import inspect
-import textwrap
+import io
+import os
+import random
 import subprocess
+import textwrap
+import time
+import traceback
+
+import aiohttp
+import discord
+from discord.ext import commands
+
 from extensions.utils import online
 
 

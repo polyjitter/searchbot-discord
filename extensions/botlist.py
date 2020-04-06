@@ -6,10 +6,10 @@
 
 '''Botlist Cog'''
 
-import discord
 import aiohttp
-from discord.ext import commands, tasks
 import dbl
+import discord
+from discord.ext import commands, tasks
 
 
 class BotList(commands.Cog, name='Bot List'):

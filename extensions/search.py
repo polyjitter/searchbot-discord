@@ -8,12 +8,13 @@
 from typing import List
 
 import discord
-from discord.ext import commands
+from discord.ext import commands, menus
 import html2text
 import re
 from urllib.parse import quote_plus
 
 from extensions.models import SearchExceptions
+from extensions.models.search_source import Result, NormalSource, ImageSource
 
 
 class Search(commands.Cog, name="Basic"):
@@ -39,7 +40,8 @@ class Search(commands.Cog, name="Basic"):
         self.tomd.body_width = 0
 
     async def _search_logic(self, query: str, is_nsfw: bool = False,
-                            category: str = 'web', count: int = 5) -> list:
+                            category: str = 'web', count: int = 5,
+                            offset: int = 0) -> list:
         """Uses scrapestack and the Qwant API to find search results."""
 
         # Typing
@@ -87,9 +89,12 @@ class Search(commands.Cog, name="Basic"):
         search_url = (
             f"{base}/search/{category}"
             f"?count={count}"
+            f"&offset={offset}"
             f"&q={query}"
             f"&safesearch={safesearch}"
-            "&t=web"
+            f"&t={category}"
+            "&extensionDisabled=true"
+            "&device=tablet"
             "&locale=en_US"
             "&uiv=4"
         )
@@ -113,10 +118,46 @@ class Search(commands.Cog, name="Basic"):
         }
         async with self.request.get(search_url, headers=headers) as resp:
             to_parse = await resp.json()
-            print(to_parse)
 
             # Sends results
             return to_parse['data']['result']['items']
+
+    async def _page_search(self, ctx, query: str, count:int = 5,
+                           category: str = 'web'):
+        """Basic search formatting - this time with pages!"""
+
+        is_nsfw = (
+            ctx.channel.is_nsfw() if hasattr(ctx.channel, 'is_nsfw')
+            else False
+        )
+
+        async def fetcher(offset, per_request, q):
+            result_objects = []
+            results = await self._search_logic(
+                query, is_nsfw, category, per_request, offset
+            )
+
+            for r in results:
+                result = Result(
+                    title=r["title"],
+                    url=r["url"],
+                    desc=r["desc"],
+                    source=r["source"]
+                )
+                result_objects.append(result)
+
+            return result_objects
+
+        pages = menus.MenuPages(
+            source=NormalSource(
+                query, fetcher, count,
+                footer="_Powered by Qwant._"
+            ),
+            clear_reactions_after=True,
+        )
+        await pages.start(ctx)
+
+
 
     async def _basic_search(self, ctx, query: str, category: str = 'web'):
         """Basic search formatting."""
@@ -169,8 +210,6 @@ class Search(commands.Cog, name="Basic"):
                 f"{other_msg}\n\n_Powered by Qwant._"
             )
 
-            print(msg)
-
             msg = re.sub(
                 r'(https?://(?:www\.)?[-a-zA-Z0-9@:%._+~#=]+\.'
                 r'[a-zA-Z0-9()]+\b[-a-zA-Z0-9()@:%_+.~#?&/=]*)',
@@ -178,13 +217,38 @@ class Search(commands.Cog, name="Basic"):
                 msg
             )
 
-
             # Sends message
             await self.info(
                 f"**New Search** - `{ctx.author}` in `{ctx.guild}`\n\n{msg}",
                 name="New Search"
             )
             await ctx.send(msg)
+
+    @commands.command()
+    async def paginated_search(self, ctx, *, query: str):
+
+        async with ctx.typing():
+            await self._page_search(ctx, query)
+
+        # async def fetcher(offset, per_request, q, *args):
+        #     result_objects = []
+        #     results = await self._search_logic(
+        #         q, False, "images", per_request, offset)
+        #     for r in results:
+        #         image = Result(
+        #             title=r["title"],
+        #             url=r["media"],
+        #             source=r["url"],
+        #             image=r["media"]
+        #         )
+        #         result_objects.append(image)
+        #     return result_objects
+
+        # pages = menus.MenuPages(
+        #     source=ImageSource(query,  fetcher, (None,)),
+        #     clear_reactions_after=True)
+        # await pages.start(ctx)
+
 
     @commands.command()
     async def search(self, ctx, *, query: str):

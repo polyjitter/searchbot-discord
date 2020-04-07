@@ -5,7 +5,8 @@
 # Used and modified with permission.
 # See LICENSE for license information.
 
-'''Main File'''
+
+"""Main File"""
 
 import json
 import os
@@ -15,13 +16,14 @@ from typing import List
 import aiohttp
 import discord
 from discord.ext import commands
+from discord.ext.menus import CannotAddReactions
 import rethinkdb
 
 from extensions.models import SearchExceptions
 
 
 class Bot(commands.Bot):
-    """Custom Bot Class that subclasses the commands.ext one"""
+    """Custom Bot Class that subclasses the commands.ext one."""
 
     def __init__(self, **options):
         """Initializes the main parts of the bot."""
@@ -270,6 +272,9 @@ async def on_command_error(ctx, error):
             "we cannot accept in a non-NSFW channel. "
             "Please try again in an NSFW channel."
         )
+
+    elif isinstance(error, CannotAddReactions):
+        await ctx.send("**I cannot add reactions for pagination here!**")
 
     # Provides a very pretty embed if something's actually a dev's fault.
     elif isinstance(error, commands.CommandInvokeError):

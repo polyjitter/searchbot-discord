@@ -3,6 +3,9 @@ config.json
 extensions/__pycache__/
 utils/__pycache__/
 .mypy_cache/
+extensions/__pycache__/core.cpython-38.pyc
+.vscode/settings.json
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -56,8 +59,3 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
-
-extensions/__pycache__/core.cpython-38.pyc
-.vscode/settings.json
-.vscode/settings.json
-.vscode/settings.json

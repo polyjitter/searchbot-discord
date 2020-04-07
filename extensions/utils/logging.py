@@ -8,6 +8,7 @@
 import traceback
 from typing import Optional
 
+import asyncio
 import discord
 from discord.ext.commands import Context
 
@@ -96,37 +97,42 @@ class Logging():
         # Provides completed embed
         return error_embed
 
-    async def info(self, content: str,
+    def info(self, content: str,
                    embed: Optional[discord.Embed] = None,
                    name: Optional[str] = None):
         """Logs info and sends it to the appropriate places."""
 
         if self.info_hook:
-            return await self.info_hook.send(
-                content=content,
-                username=(
-                    f"{self.bot.user.name} - {name if name else 'unknown'}"
-                ),
-                avatar_url=str(self.bot.user.avatar_url),
-                embed=embed
-            )
+            async def task():
+                await self.info_hook.send(
+                    content=content,
+                    username=(
+                        f"{self.bot.user.name} - {name if name else 'unknown'}"
+                    ),
+                    avatar_url=str(self.bot.user.avatar_url),
+                    embed=embed
+                )
+
+            asyncio.create_task(task())
         else:
             return
 
-    async def warn(self, content: str,
-                   embed: Optional[discord.Embed] = None,
-                   name: Optional[str] = None):
+    def warn(self, content: str, embed: Optional[discord.Embed] = None,
+             name: Optional[str] = None):
         """Logs warnings and sends them to the appropriate places."""
 
         if self.warn_hook:
-            return await self.warn_hook.send(
-                content=content,
-                username=(
-                    f"{self.bot.user.name} - {name if name else 'unknown'}"
-                ),
-                avatar_url=str(self.bot.user.avatar_url),
-                embed=embed
-            )
+            async def task():
+                await self.warn_hook.send(
+                    content=content,
+                    username=(
+                        f"{self.bot.user.name} - {name if name else 'unknown'}"
+                    ),
+                    avatar_url=str(self.bot.user.avatar_url),
+                    embed=embed
+                )
+
+            asyncio.create_task(task())
         else:
             return
 
@@ -168,20 +174,23 @@ class Logging():
         )
         return error_embed
 
-    async def debug(self, content: str,
-                    embed: Optional[discord.Embed] = None,
-                    name: Optional[str] = None):
+    def debug(self, content: str,
+              embed: Optional[discord.Embed] = None,
+              name: Optional[str] = None):
         """Logs warnings and sends them to the appropriate places."""
 
         if self.debug_hook and (self.maintenance or self.debug_toggle):
-            return await self.debug_hook.send(
-                content=f"```{content}```",
-                username=(
-                    f"{self.bot.user.name} - {name if name else 'unknown'}"
-                ),
-                avatar_url=str(self.bot.user.avatar_url),
-                embed=embed
-            )
+            async def task():
+                await self.debug_hook.send(
+                    content=f"```{content}```",
+                    username=(
+                        f"{self.bot.user.name} - {name if name else 'unknown'}"
+                    ),
+                    avatar_url=str(self.bot.user.avatar_url),
+                    embed=embed
+                )
+
+            asyncio.create_task(task())
         else:
             return
 

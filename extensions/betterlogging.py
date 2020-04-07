@@ -34,7 +34,7 @@ class BetterLogging(commands.Cog):
         msg += f"_Member Count:_ {guild.member_count}\n\n"
         msg += f"_Guild Count now {len(self.bot.guilds)}._"
 
-        await self.info(content=msg, name="Guild Join")
+        self.info(content=msg, name="Guild Join")
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
@@ -45,7 +45,7 @@ class BetterLogging(commands.Cog):
         msg += f"_Member Count:_ {guild.member_count}\n\n"
         msg += f"_Guild Count now {len(self.bot.guilds)}._"
 
-        await self.info(content=msg, name="Guild Leave")
+        self.info(content=msg, name="Guild Leave")
 
     @commands.Cog.listener()
     async def on_command(self, ctx):
@@ -56,7 +56,7 @@ class BetterLogging(commands.Cog):
             f"**{ctx.author}** in _\"{ctx.guild if ctx.guild else 'DMs'}\"_."
         )
 
-        await self.info(content=msg, name="Command Call")
+        self.info(content=msg, name="Command Call")
 
     async def cog_check(self, ctx):
         return commands.is_owner()(ctx.command)

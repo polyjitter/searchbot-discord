@@ -102,7 +102,7 @@ class Search(commands.Cog, name="Basic"):
                 f"&url={quote_plus(search_url)}"
             )
 
-        await self.debug(search_url, name="_search_logic")
+        self.debug(search_url, name="_search_logic")
 
         # Searching
         headers = {
@@ -113,7 +113,6 @@ class Search(commands.Cog, name="Basic"):
         }
         async with self.request.get(search_url, headers=headers) as resp:
             to_parse = await resp.json()
-            print(to_parse)
 
             # Sends results
             return to_parse['data']['result']['items']
@@ -169,8 +168,6 @@ class Search(commands.Cog, name="Basic"):
                 f"{other_msg}\n\n_Powered by Qwant._"
             )
 
-            print(msg)
-
             msg = re.sub(
                 r'(https?://(?:www\.)?[-a-zA-Z0-9@:%._+~#=]+\.'
                 r'[a-zA-Z0-9()]+\b[-a-zA-Z0-9()@:%_+.~#?&/=]*)',
@@ -180,7 +177,7 @@ class Search(commands.Cog, name="Basic"):
 
 
             # Sends message
-            await self.info(
+            self.info(
                 f"**New Search** - `{ctx.author}` in `{ctx.guild}`\n\n{msg}",
                 name="New Search"
             )

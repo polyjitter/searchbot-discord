@@ -116,7 +116,7 @@ class BotList(commands.Cog, name='Bot List'):
                 responses['dad'] = resp.status
 
         log_msg = f"**Botlists updated!**\n\n```{responses}```"
-        await self.debug(content=log_msg, name='List Update')
+        self.debug(content=log_msg, name='List Update')
 
         # Finalization
         return responses

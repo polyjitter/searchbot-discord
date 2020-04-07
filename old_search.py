@@ -113,7 +113,7 @@
         # Reached if error with returned results
         except (KeyError, IndexError) as e:
             # Logging
-            await self.warn(
+            self.warn(
                 f"A user encountered a(n) `{e}` with <{instance}> when searching for `{query}`. "
                 "Consider removing it or looking into it.",
                 name="Failed Instance"
@@ -201,7 +201,7 @@
             msg = await self._old_search_logic(query, is_nsfw, category)
             await ctx.send(msg)
 
-            await self.info(
+            self.info(
                 content=(
                     f"**{ctx.author}** searched for `{query}` "
                     f"in \"{ctx.guild}\" and got this:"

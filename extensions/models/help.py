@@ -5,9 +5,11 @@
 
 '''HelpCmd File'''
 
+import itertools
+
 import discord
 from discord.ext import commands
-import itertools
+
 
 class TaciHelpCommand(commands.MinimalHelpCommand):
     def __init__(self, **options):
@@ -105,13 +107,14 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
             if heading == '\U0001F4E6  Core':
                 # `command1`, `command2`, `command3`
                 # On Same Line
-                self.paginator.add_line(", ".join(f"`{c.name}`" for c in commands))
+                self.paginator.add_line(
+                    ", ".join(f"`{c.name}`" for c in commands))
             else:
                 # `command` - description
                 # On new lines
                 for c in commands:
                     self.paginator.add_line(f"`{c.name}` - {c.short_doc}")
-            
+
             # New Line
             self.paginator.add_line()
 
@@ -130,8 +133,8 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
             self.paginator.add_line(note, empty=True)
 
         # Gets the category for each command in the bot
-        no_category = f"\u200b{self.no_category}"
-        def get_category(command, *, no_category=no_category):
+        def get_category(command, *,
+                         no_category = f"\u200b{self.no_category}"):
             cog = command.cog
             if cog is not None:
                 return f"{cog.emoji}  {cog.qualified_name}" if cog.emoji else cog.qualified_name
@@ -144,12 +147,13 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
 
         # Splits Bot List and Core commands out of the others
         for category, commands in to_iterate:
-            commands = sorted(commands, key=lambda c: c.name) if self.sort_commands else list(commands)
+            commands = sorted(
+                commands, key=lambda c: c.name) if self.sort_commands else list(commands)
             if category in ['\U0001F4E6  Core', '\U0001F5F3  Bot List']:
-                main_cmds.extend(commands) 
+                main_cmds.extend(commands)
             else:
                 other_cmds[category] = commands
-        
+
         # Core/Bot List commands become compacted
         self.add_bot_commands_formatting(main_cmds, '\U0001F4E6  Core')
 
@@ -197,7 +201,7 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
         # Sends the completed help output
         await self.send_pages()
 
-    async def send_group_help(self, group):      
+    async def send_group_help(self, group):
         """Sends the help for a command group."""
 
         # Adds the header if there
@@ -206,7 +210,7 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
             self.paginator.add_line(note, empty=True)
             # New Line
 
-        # Adds the formatting for the main group command 
+        # Adds the formatting for the main group command
         self.add_command_formatting(group)
 
         # Adds any subcommands
@@ -218,7 +222,7 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
             for command in filtered:
                 self.add_subcommand_formatting(command)
 
-        # Adds the footer if there 
+        # Adds the footer if there
         note = self.get_ending_note()
         if note:
             self.paginator.add_line()  # New Line
@@ -247,6 +251,7 @@ class TaciHelpCommand(commands.MinimalHelpCommand):
         # Sends the completed help output.
         self.paginator.close_page()  # TODO What does this do?
         await self.send_pages()
+
 
 def setup(bot):
     """Lets helpcmd be added and reloaded as an extension."""

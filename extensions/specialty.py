@@ -135,8 +135,7 @@ class SpecialtySearch(commands.Cog, name="Specialty"):
 
                     await ctx.send(f"**{title}** - <{url}>", embed=embed)
 
-                except Exception as e:
-
+                except:
                     aired = f"{anime['attributes']['startDate']}{thing}"
                     template = f"""
 url: {url}

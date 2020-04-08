@@ -343,7 +343,7 @@ Guild count: {len(self.bot.guilds)}
                 "You wish to use me in!_"
             )
 
-            await guild.owner.send(guild_msg)
+            await owner.send(guild_msg)
             return  # Ends here if there are no good channels to send to
 
         # Owner Disclosure
@@ -362,7 +362,7 @@ Guild count: {len(self.bot.guilds)}
         )
 
         # Send owner disclosure
-        await guild.owner.send(owner_msg)
+        await owner.send(owner_msg)
 
 
 def setup(bot):

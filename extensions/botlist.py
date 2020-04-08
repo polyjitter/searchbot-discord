@@ -36,7 +36,7 @@ class BotList(commands.Cog, name='Bot List'):
             self.bot, self.dbl_token)
 
         # Start update loop
-        self.update_stats.start()
+        self.update_stats.start()  # pylint: disable=no-member
 
     async def _update_logic(self):
         """Handles all statistic updating for various different bot lists."""
@@ -168,7 +168,7 @@ class BotList(commands.Cog, name='Bot List'):
         await self._update_logic()
 
     def cog_unload(self):
-        self.update_stats.cancel()
+        self.update_stats.cancel()  # pylint: disable=no-member
 
 
 def setup(bot):

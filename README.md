@@ -22,4 +22,4 @@
 
 **@uwx** - Regex development
 
-**Testers** - @uwx, @KaraMarah, Jhelios
+**Testers** - @uwx, @KaraMarah, JHelios

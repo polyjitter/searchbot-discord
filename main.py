@@ -204,6 +204,7 @@ class Bot(commands.Bot):
         msg += "-----------------------------\n"
         print(msg)
 
+        # pylint: disable=no-member
         self.logging.info(content=msg, name="On Ready")
 
     async def on_message(self, message):
@@ -284,7 +285,7 @@ async def on_command_error(ctx, error):
             f"**An error occured: {type(error).__name__}. "
             f"Please contact {bot.appinfo.owner}.**"
         )
-        error_embed = await bot.logging.error(
+        error_embed = await bot.logging.error(  # pylint: disable=no-member
             error, ctx,
             ctx.command.cog.qualified_name if ctx.command.cog.qualified_name
             else "DMs"
@@ -295,7 +296,8 @@ async def on_command_error(ctx, error):
 
     # If anything else goes wrong, just go ahead and send it in chat.
     else:
-        await bot.logging.error(
+
+        await bot.logging.error(  # pylint: disable=no-member
             error, ctx,
             ctx.command.cog.qualified_name if ctx.command.cog.qualified_name
             else "DMs"

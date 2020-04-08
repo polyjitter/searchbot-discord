@@ -7,6 +7,7 @@
 
 '''Main File'''
 
+import asyncio
 import json
 import os
 import sys
@@ -163,21 +164,25 @@ class Bot(commands.Bot):
 
         # Maintenance Mode
         if self.maintenance:
-            await self.change_presence(
-                activity=discord.Activity(
-                    name="Maintenance",
-                    type=discord.ActivityType.watching
-                ),
-                status=discord.Status.dnd
-            )
+            async def presence_task():
+                await self.change_presence(
+                    activity=discord.Activity(
+                        name="Maintenance",
+                        type=discord.ActivityType.watching
+                    ),
+                    status=discord.Status.dnd
+                )
         else:
-            await self.change_presence(
-                activity=discord.Activity(
-                    name=f"@{self.user.name}",
-                    type=discord.ActivityType.listening
-                ),
-                status=discord.Status.online
-            )
+            async def presence_task():
+                await self.change_presence(
+                    activity=discord.Activity(
+                        name=f"@{self.user.name}",
+                        type=discord.ActivityType.listening
+                    ),
+                    status=discord.Status.online
+                )
+
+        asyncio.create_task(presence_task())
 
         # NOTE Rethink Entry Point
         # Initializes all rethink stuff
@@ -199,7 +204,7 @@ class Bot(commands.Bot):
         msg += "-----------------------------\n"
         print(msg)
 
-        await self.logging.info(content=msg, name="On Ready")
+        self.logging.info(content=msg, name="On Ready")
 
     async def on_message(self, message):
         """Handles what the bot does whenever a message comes across."""

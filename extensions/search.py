@@ -14,6 +14,7 @@ import re
 from urllib.parse import quote_plus
 
 from extensions.models import SearchExceptions
+from extensions.models.regex import nono_re
 
 
 class Search(commands.Cog, name="Basic"):
@@ -47,31 +48,7 @@ class Search(commands.Cog, name="Basic"):
         safesearch: str
 
         # NSFW Filtering
-        # WARNING This list includes slurs.
-        nono_words = [
-            'tranny', 'faggot', 'fag', 'porn', 'cock', 'dick',
-            'titty', ' tit ', 'boob', 'penis', 'slut', ' cum ', 'jizz',
-            'semen', 'cooch', 'coochie', 'pussy', 'penis', 'fetish',
-            'bdsm', 'sexy', 'xxx', 'orgasm', 'masturbat',
-            'erotic', 'creampie', 'fap', 'nude', 'orgasm',
-            'squirting', 'yiff', 'e621', ' sex', 'ejaculat',
-            'cunt', 'vagina', 'coom', 'troon', 'hentai', 'yaoi',
-            'bukkake', 'bara', 'shota', 'loli', 'fetish', 'spunk',
-            'pron', 'p0rn', 'pr0n', 'gloryhole', 'felch', 'skullfuck',
-            'scat', 'pissplay', 'piss play', 'underage', 'bbw',
-            'fisting', 'queef', "rimming", 'rimjob', 'bdsm',
-            'cbt', 'blumpkin', 'boner', 'prostitut', 'butt plug',
-            'transvestite', 'femboy', 'castrat', 'philia', 'edging',
-            'edgeplay', 'enema', 'facial', 'fellat', 'femdom', 'footjob',
-            'blowjob', 'titjob', 'handjob', 'frot', 'gang bang', 'gangbang',
-            'glory hole', 'hermap', 'jerk off', 'jerking off', 'jack off',
-            'jacking off', 'kink', 'wet dream', 'anal', 'pegging', 'precum',
-            'pre-cum', 'pre cum', 'priap', 'scrotum', 'shemale', 'smegma',
-            'smut', 'softcore', 'transsexual', 'voyeur', 'viagra', 'wank',
-            'whore'
-        ]
-
-        if any(n in query for n in nono_words):
+        if nono_re.match(query):
             raise SearchExceptions.SafesearchFail('Query had NSFW.')
 
         base = "https://api.qwant.com/api"

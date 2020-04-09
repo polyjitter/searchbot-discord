@@ -48,7 +48,7 @@ class Search(commands.Cog, name="Basic"):
         safesearch: str
 
         # NSFW Filtering
-        if nono_re.match(query):
+        if nono_re.match(query) and not is_nsfw:
             raise SearchExceptions.SafesearchFail('Query had NSFW.')
 
         base = "https://api.qwant.com/api"

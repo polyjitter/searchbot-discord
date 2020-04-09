@@ -2,6 +2,8 @@ import pytest
 
 import discord.ext.test as dpytest
 
+import extensions.models.regex
+
 @pytest.mark.asyncio
 async def test_regex():
     # bot = main.Bot()

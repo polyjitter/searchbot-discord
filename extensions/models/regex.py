@@ -152,5 +152,5 @@ I | X
 )
 
 
-def setup():
+def setup(bot):
     pass

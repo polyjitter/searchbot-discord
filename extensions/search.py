@@ -13,7 +13,7 @@ import html2text
 import re
 from urllib.parse import quote_plus
 
-from extensions.models import SearchExceptions
+from extensions.models import searchexceptions
 from extensions.models.regex import nono_re
 
 
@@ -49,7 +49,7 @@ class Search(commands.Cog, name="Basic"):
 
         # NSFW Filtering
         if nono_re.match(query) and not is_nsfw:
-            raise SearchExceptions.SafesearchFail('Query had NSFW.')
+            raise searchexceptions.SafesearchFail('Query had NSFW.')
 
         base = "https://api.qwant.com/api"
 
@@ -213,7 +213,7 @@ class Search(commands.Cog, name="Basic"):
                 await self._basic_search(
                     ctx, ctx.message.content[len(ctx.prefix):]
                 )
-            except SearchExceptions.SafesearchFail:
+            except searchexceptions.SafesearchFail:
                 await ctx.send(
                     "**Sorry!** That query included language "
                     "we cannot accept in a non-NSFW channel. "

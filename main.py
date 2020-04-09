@@ -18,7 +18,7 @@ import discord
 from discord.ext import commands
 import rethinkdb
 
-from extensions.models import SearchExceptions
+from extensions.models import searchexceptions
 
 
 class Bot(commands.Bot):
@@ -270,7 +270,7 @@ async def on_command_error(ctx, error):
             f"**Missing Argument!** A `{error.param.name}` is needed."
         )
 
-    elif isinstance(error, SearchExceptions.SafesearchFail):
+    elif isinstance(error, searchexceptions.SafesearchFail):
         await ctx.send(
             "**Sorry!** That query included language "
             "we cannot accept in a non-NSFW channel. "

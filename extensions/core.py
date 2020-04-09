@@ -359,7 +359,8 @@ Guild count: {len(self.bot.guilds)}
             f"I have sent a tutorial message to `{channel.name}` "
             "describing how I may be used.\n\n"
             "If you do not wish to have me there, "
-            "simply kick me from the server.\n\n"
+            "simply kick me from the server. You may contact me at any "
+            "option listed in `info` for deletion requests.\n\n"
             "_Thanks for your time!_"
         )
 

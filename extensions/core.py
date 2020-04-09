@@ -65,7 +65,7 @@ class Core(commands.Cog):
             "These logs are shared with nobody "
             "other than those who help develop this bot. "
             "If you do not agree to this, please remove this bot. "
-            "You may contact me at any "
+            "You may contact the devs at any "
             "option listed in `info` for deletion requests._\n\n"
             "_You may recall this message at any time with `tutorial`._"
         )
@@ -361,7 +361,8 @@ Guild count: {len(self.bot.guilds)}
             f"I have sent a tutorial message to `{channel.name}` "
             "describing how I may be used.\n\n"
             "If you do not wish to have me there, "
-            "simply kick me from the server. You may contact me at any "
+            "simply kick me from the server. You may contact the devs "
+            "at any "
             "option listed in `info` for deletion requests.\n\n"
             "_Thanks for your time!_"
         )

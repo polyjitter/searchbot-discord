@@ -119,6 +119,8 @@ class Core(commands.Cog):
 
         # Footer
         msg += (
+            "_When in doubt, you may email the creator of the codebase at"
+            "`polyjitter@fastmail.com`._\n"
             f"_See {prefix}`help` for help, `invite` to add the bot, "
             "and `stats` for statistics._"
         )

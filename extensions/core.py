@@ -64,7 +64,9 @@ class Core(commands.Cog):
             "for debug and maintenance purposes. "
             "These logs are shared with nobody "
             "other than those who help develop this bot. "
-            "If you do not agree to this, please remove this bot._\n\n"
+            "If you do not agree to this, please remove this bot. "
+            "You may contact me at any "
+            "option listed in `info` for deletion requests._\n\n"
             "_You may recall this message at any time with `tutorial`._"
         )
 
@@ -119,7 +121,7 @@ class Core(commands.Cog):
 
         # Footer
         msg += (
-            "_When in doubt, you may email the creator of the codebase at"
+            "_When in doubt, you may email the creator of the codebase at "
             "`polyjitter@fastmail.com`._\n"
             f"_See {prefix}`help` for help, `invite` to add the bot, "
             "and `stats` for statistics._"

@@ -53,6 +53,10 @@ class Bot(commands.Bot):
             self.custom_help: bool = self.config['CUSTOM_HELP']
             self.mention_assist: bool = self.config['MENTION_ASSIST']
             self.prefixless_dms: bool = self.config['PREFIXLESS_DMS']
+            if self.config['REMOVE_MENTIONS']:
+                self.allowed_mentions = discord.AllowedMentions.none()
+            else:
+                self.allowed_mentions = discord.AllowedMentions.all()
 
         # RethinkDB
         if self.config['RETHINK']['DB']:

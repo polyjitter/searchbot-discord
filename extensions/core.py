@@ -64,9 +64,7 @@ class Core(commands.Cog):
             "for debug and maintenance purposes. "
             "These logs are shared with nobody "
             "other than those who help develop this bot. "
-            "If you do not agree to this, please remove this bot. "
-            "You may contact the devs at any "
-            "option listed in `info` for deletion requests._\n\n"
+            "If you do not agree to this, please remove this bot._\n\n"
             "_You may recall this message at any time with `tutorial`._"
         )
 
@@ -121,8 +119,6 @@ class Core(commands.Cog):
 
         # Footer
         msg += (
-            "_When in doubt, you may email the creator of the codebase at "
-            "`polyjitter@fastmail.com`._\n"
             f"_See {prefix}`help` for help, `invite` to add the bot, "
             "and `stats` for statistics._"
         )
@@ -316,26 +312,29 @@ Guild count: {len(self.bot.guilds)}
         guild_msg: str = self._create_tutorial(guild)
         channel: Optional[discord.TextChannel] = None
         owner: discord.Member = guild.owner
-
+        
         # Tutorial Message
         # Get text channels
         text_channels = []
         for c in guild.channels:
             if type(c) is discord.TextChannel:
                 text_channels.append(c)
-
+                break
+        
         # Sets channel to general if it exists
         for c in guild.channels:
             if c.name == 'general':
                 channel = c
-
+                break
+        
         # XXX This looks like garbage
         # Else posts in first open channel
         if not channel:
             for c in guild.channels:
                 if c.permissions_for(guild.me).send_messages:
                     channel = c
-
+                    break
+        
         # Send tutorial message
         if channel:
             await channel.send(guild_msg)
@@ -346,8 +345,8 @@ Guild count: {len(self.bot.guilds)}
                 "Please give me send message permissions in the channels "
                 "You wish to use me in!_"
             )
-
-            await owner.send(guild_msg)
+        
+            await guild.owner.send(guild_msg)
             return  # Ends here if there are no good channels to send to
 
         # Owner Disclosure
@@ -361,14 +360,12 @@ Guild count: {len(self.bot.guilds)}
             f"I have sent a tutorial message to `{channel.name}` "
             "describing how I may be used.\n\n"
             "If you do not wish to have me there, "
-            "simply kick me from the server. You may contact the devs "
-            "at any "
-            "option listed in `info` for deletion requests.\n\n"
+            "simply kick me from the server.\n\n"
             "_Thanks for your time!_"
         )
 
         # Send owner disclosure
-        await owner.send(owner_msg)
+        await guild.owner.send(owner_msg)
 
 
 def setup(bot):

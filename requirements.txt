@@ -15,7 +15,7 @@ fonttools==4.12.1
 html2text==2020.1.16
 idna==2.9
 isort==4.3.21
-lazy-object-proxy==1.4.3
+lazy-object-proxy==1.5.1
 mccabe==0.6.1
 more-itertools==8.2.0
 multidict==4.7.6

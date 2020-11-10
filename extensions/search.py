@@ -61,10 +61,12 @@ class Search(commands.Cog, name="Basic"):
 
         # Search URL Building
         # api.qwant.com/api/search/web?count=5&q=test&safesearch=2&...
+        # XXX Find out why quote_plus wasn't working
+        query_with_plus = query.replace(' ', '+')
         search_url = (
             f"{base}/search/{category}"
             f"?count={count}"
-            f"&q={query}"
+            f"&q={query_with_plus}"
             f"&safesearch={safesearch}"
             "&t=web"
             "&locale=en_US"

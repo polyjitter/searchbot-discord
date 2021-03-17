@@ -2,7 +2,7 @@ aiohttp==3.6.2
 astroid==2.4.2
 async-timeout==3.0.1
 attrs==19.3.0
-autopep8==1.5
+autopep8==1.5.6
 chardet==3.0.4
 dblpy==0.3.4
 discord==1.0.1
